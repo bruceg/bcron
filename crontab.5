@@ -1,17 +1,38 @@
-.TH CRONTAB 5
+.\" Copyright 1988,1990,1993,1994 by Paul Vixie
+.\" Copyright (c) 2005 by Bruce Guenter
+.\" All rights reserved
+.\"
+.\" Copyright (c) 2004 by Internet Systems Consortium, Inc. ("ISC")
+.\" Copyright (c) 1997,2000 by Internet Software Consortium, Inc.
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+.\" OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.\" $Id$
+.\" 
+.\" Modified by Charles Cazabon for bcron; changes placed into the public
+.\" domain.
+.\" 
+.TH CRONTAB 5 "bcron"
 .SH NAME
-crontab \- file format for bcron tables
+crontab \- tables for driving bcron
 .SH DESCRIPTION
 A
 .I crontab
 file contains instructions to the
-.IR cron (8)
+.IR bcron\-sched (8)
 daemon of the general form: ``run this command at this time on this date''.
 Each user has their own crontab, and commands in any given crontab will be
-executed as the user who owns the crontab.  Uucp and News will usually have
-their own crontabs, eliminating the need for explicitly running
-.IR su (1)
-as part of a cron command.
+executed as the user who owns the crontab.
 .PP
 Blank lines and leading spaces and tabs are ignored.  Lines whose first
 non-space character is a pound-sign (#) are comments, and are ignored.
@@ -36,17 +57,16 @@ leading or trailing blanks.
 .PP
 Several environment variables are set up
 automatically by the
-.IR cron (8)
-daemon.
-SHELL is set to /bin/sh, and LOGNAME and HOME are set from the /etc/passwd 
+.IR bcron\-exec (8)
+program.
+SHELL is set to /bin/sh, and LOGNAME, USER, and HOME are set from the
+.I /etc/passwd 
 line of the crontab's owner.
-HOME and SHELL may be overridden by settings in the crontab; LOGNAME may not.
+.\" HOME and SHELL may be overridden by settings in the crontab;
+.\" LOGNAME and USER may not.
 .PP
-(Another note: the LOGNAME variable is sometimes called USER on BSD systems...
-on these systems, USER will be set also.)
-.PP
-In addition to LOGNAME, HOME, and SHELL,
-.IR cron (8)
+In addition to LOGNAME, USER, HOME, and SHELL,
+.IR bcron\-exec (8)
 will look at MAILTO if it has any reason to send mail as a result of running
 commands in ``this'' crontab.  If MAILTO is defined (and non-empty), mail is
 sent to the user so named.  If MAILTO is defined but empty (MAILTO=""), no
@@ -59,13 +79,18 @@ The format of a cron command is very much the V7 standard, with a number of
 upward-compatible extensions.  Each line has five time and date fields,
 followed by a user name if this is the system crontab file,
 followed by a command.  Commands are executed by
-.IR cron (8)
+.IR bcron\-sched (8)
 when the minute, hour, and month of year fields match the current time,
 .I and
-when at least one of the two day fields (day of month, or day of week)
+at least one of the two day fields (day of month, or day of week)
 match the current time (see ``Note'' below).
-.IR cron (8)
-examines cron entries once every minute.
+Jobs scheduled during non-existent times, such as "missing hours" during
+daylight savings conversion, will be scheduled at some point shortly
+after the non-existent time.  Jobs scheduled during repeating times,
+such as "duplicate hours" during daylight savings conversion, will be
+scheduled only once (unless they would repeat anyways, such as jobs that
+run every minute or hour).
+.PP
 The time and date fields are:
 .IP
 .ta 1.5i
@@ -77,9 +102,9 @@ minute	0-59
 .br
 hour	0-23
 .br
-day of month	0-31
+day of month	1-31
 .br
-month	0-12 (or names, see below)
+month	1-12 (or names, see below)
 .br
 day of week	0-7 (0 or 7 is Sun, or use names)
 .br
@@ -109,13 +134,9 @@ lists of names are not allowed.
 .PP
 The ``sixth'' field (the rest of the line) specifies the command to be
 run.
-The entire command portion of the line, up to a newline or %
-character, will be executed by /bin/sh or by the shell
+The entire command portion of the line
+will be executed by /bin/sh or by the shell
 specified in the SHELL variable of the cronfile.
-Percent-signs (%) in the command, unless escaped with backslash
-(\\), will be changed into newline characters, and all data
-after the first % will be sent to the command as standard
-input.
 .PP
 Note: The day of a command's execution can be specified by two
 fields \(em day of month, and day of week.  If both fields are
@@ -128,23 +149,23 @@ would cause a command to be run at 4:30 am on the 1st and 15th of each
 month, plus every Friday.
 .SH EXAMPLE CRON FILE
 .nf
-
 # use /bin/sh to run commands, no matter what /etc/passwd says
 SHELL=/bin/sh
-# mail any output to `paul', no matter whose crontab this is
-MAILTO=paul
+# mail any output to `bruce@example.com', no matter whose crontab this is
+MAILTO=bruce@example.com
 #
 # run five minutes after midnight, every day
 5 0 * * *       $HOME/bin/daily.job >> $HOME/tmp/out 2>&1
 # run at 2:15pm on the first of every month -- output mailed to paul
 15 14 1 * *     $HOME/bin/monthly
-# run at 10 pm on weekdays, annoy Joe
-0 22 * * 1-5	mail -s "It's 10pm" joe%Joe,%%Where are your kids?%
 23 0-23/2 * * * echo "run 23 minutes after midn, 2am, 4am ..., everyday"
 5 4 * * sun     echo "run at 5 after 4 every sunday"
 .fi
+.SH FILES
+/etc/crontab			System crontab file
+/etc/cron.d			System crontab directory
 .SH SEE ALSO
-cron(8), crontab(1)
+bcron\-sched(8), bcron\-spool(8), bcrontab(1)
 .SH EXTENSIONS
 When specifying day of week, both day 0 and day 7 will be considered Sunday.
 BSD and ATT seem to disagree about this.
@@ -165,4 +186,6 @@ feature can be turned off and no mail will be sent at all (SysV can't do this
 either).
 .SH AUTHOR
 .nf
-Paul Vixie <paul@vix.com>
+Paul Vixie <vixie@isc.org>
+Charles Cazabon <charlesc-cronman @ discworld.dyndns.org>
+Bruce Guenter <bruceg@em.ca>

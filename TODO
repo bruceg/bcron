@@ -1,6 +1,13 @@
+-FIXME: make sure to send no mail if MAILTO=""
+
+-FIXME: Disallow setting $LOGNAME and $USER in crontabs.
+
+-Add support for binary (pre-parsed) crontabs.
+
+-Send email if cron job parsing fails.
+ -Allow for some special address for system crontabs.
 -Fix README
 -Fix description in spec
--Fix crontab.5 man page.
 
 crontab.c:crontab_load:
 -merge jobs together, not just drop them
