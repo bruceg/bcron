@@ -30,7 +30,7 @@ static void reload(struct crontabs_entry* entry)
   const char* name = entry->key;
   msg3("Reloading '", name, "'");
   wrap_str(str_copy2s(&path, CRONTAB_DIR "/", name));
-  if (!crontab_load(&entry->data, path.s, name[0] == ':' ? 0 : name))
+  if (!crontab_import(&entry->data, path.s, name[0] == ':' ? 0 : name))
     warn3("Reloading '", name, "' failed, using old table");
 }
 
@@ -40,7 +40,7 @@ static void load(const char* name)
   msg3("Loading '", name, "'");
   wrap_str(str_copy2s(&path, CRONTAB_DIR "/", name));
   memset(&c, 0, sizeof c);
-  if (crontab_load(&c, path.s, name[0] == ':' ? 0 : name)) {
+  if (crontab_import(&c, path.s, name[0] == ':' ? 0 : name)) {
     if (!crontabs_add(&crontabs, &name, &c))
       die_oom(111);
   }

@@ -112,7 +112,7 @@ struct crontab
 };
 
 int crontab_parse(struct crontab* c, str* data, const char* runas);
-int crontab_load(struct crontab* c, const char* path, const char* runas);
+int crontab_import(struct crontab* c, const char* path, const char* runas);
 void crontab_free(struct crontab* c);
 
 /*****************************************************************************/

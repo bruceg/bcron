@@ -105,7 +105,7 @@ int crontab_parse(struct crontab* c, str* data, const char* runas)
   return 1;
 }
 
-int crontab_load(struct crontab* c, const char* path, const char* runas)
+int crontab_import(struct crontab* c, const char* path, const char* runas)
 {
   static str file;
   struct ibuf in;
