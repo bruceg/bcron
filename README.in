@@ -67,7 +67,7 @@ Operation:
   bcron-update /etc/crontab /etc/cron.d >/dev/null 2>&1 &
 
 - Sample run scripts are provided for operating the above commands under
-  svscan and supervise.
+  svscan and supervise (or equivalents such as runit).
 
 This package is Copyright(C) 2005 Bruce Guenter or FutureQuest, Inc.,
 and may be copied according to the GNU GENERAL PUBLIC LICENSE (GPL)
