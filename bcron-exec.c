@@ -122,6 +122,7 @@ static int forkexec_slot(int slot, int fdin, int fdout,
     dup2(fdout, 2);
     close(fdout);
     execv(argv[0], (char**)argv);
+    die3sys(111, "Could not execute '", argv[0], "'");
     exit(111);
   }
   slots[slot].pid = pid;
