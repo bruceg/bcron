@@ -106,6 +106,11 @@ static void exec_cmd(int fdin, int fdout,
 		     const str* env,
 		     const struct passwd* pw)
 {
+  dup2(fdin, 0);
+  close(fdin);
+  dup2(fdout, 1);
+  dup2(fdout, 2);
+  close(fdout);
   if (0 && initgroups(pw->pw_name, pw->pw_gid) != 0)
     die1sys(111, "Could not initgroups");
   if (setgid(pw->pw_gid) != 0)
@@ -117,11 +122,6 @@ static void exec_cmd(int fdin, int fdout,
   if (env)
     if ((environ = envstr_make_array(env)) == 0)
       die_oom(111);
-  dup2(fdin, 0);
-  close(fdin);
-  dup2(fdout, 1);
-  dup2(fdout, 2);
-  close(fdout);
   execv(argv[0], (char**)argv);
   die3sys(111, "Could not execute '", argv[0], "'");
   exit(111);
