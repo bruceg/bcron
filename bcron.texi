@@ -24,7 +24,7 @@ This document explains ...
 @c ****************************************************************************
 @chapter Introduction
 
-Name comes from: Busy/Bee/Bruce's/Better cron.
+Name comes from: Bruce's / Better / Busy cron.
 
 @section Problems With Other cron Systems
 
@@ -365,14 +365,15 @@ The above three items are read
 @item /var/spool/cron/crontabs/
 Directory containing raw (text) crontab files.
 
-@item /var/spool/cron/bcron/
-Directory containing saved state from the crontabs.
-
-@item /var/spool/cron/bcron/:etc:cron.d:*
+@item /var/spool/cron/crontabs/:etc:cron.d:*
 Colon is chosen as a seperator because usernames cannot contain
 colons due to the format of @file{/etc/passwd}.
 
-@item /var/spool/cron/bcron/:etc:crontab
+@item /var/spool/cron/crontabs/:etc:crontab
+
+@item /var/spool/cron/bcrontabs/
+Directory containing pre-parsed (aka compiled) crontab files (Not yet
+implemented).
 
 @item /var/spool/cron/tmp/
 Temporary directory for files as they are written.
@@ -387,13 +388,15 @@ Named pipe used to tell @file{bcron-sched} to rescan the crontabs.
 @subsection Compiled File Format
 
 A compled data file is composed of zero or more sections.  Each
-section is composed of a 32-bit length followed by that many bytes of
-data.  The first byte of the data indicates what kind of section it
-is.
+section is composed of a length number followed by that many bytes of
+data.  The data is stored in a binary format to allow certain numbers
+in the compiled file (most notably the last execution time) to be
+rewritten in-place.  The first byte of the data indicates what kind of
+section it is.
 
 @table @code
 
-@item 0
+@item 1
 Standard job, contains:
 
 @itemize
@@ -405,7 +408,8 @@ Standard job, contains:
 @item Month bitmap (12 of 32 bits)
 @item Day-of-week bitmap (7 of 32 bits)
 @item Run-as username (NUL terminated)
-@item Command
+@item Command (NUL terminated)
+@item Environment assignments
 @end itemize
 
 @end table
@@ -417,7 +421,7 @@ Jobs with this option bit set will not be run if the same job is
 already running.
 @end itemize
 
-Note: All numbers are in LSB format unless otherwise indicated.
+Note: All numbers are in 32-bit LSB format unless otherwise indicated.
 Timestamps represented as the number of minutes since the Epoch
 (00:00:00 UTC, January 1, 1970).
 
