@@ -3,6 +3,8 @@ Changes in version 0.05
 
 - Die with error if executing the shell or wrapper failed in bcron-exec.
 
+- Set up supplemental groups in bcron-exec.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 #include <sysdeps.h>
 #include <errno.h>
+#include <grp.h>
 #include <pwd.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -104,7 +105,14 @@ static void exec_cmd(int fdin, int fdout,
 		     const str* env,
 		     const struct passwd* pw)
 {
+  gid_t groups[256];
+  int ngroups;
+  ngroups = sizeof groups / sizeof *groups;
+  if (getgrouplist(pw->pw_name, pw->pw_gid, groups, &ngroups) == -1)
+    die1(111, "Could not determine group list");
   if (setgid(pw->pw_gid) == -1) die1sys(111, "Could not setgid");
+  if (setgroups(ngroups, groups) != 0)
+    die1sys(111, "Could not set supplementary groups");
   if (setuid(pw->pw_uid) == -1) die1sys(111, "Could not setuid");
   if (chdir(pw->pw_dir) == -1) die1sys(111, "Could not change directory");
   if (env)
