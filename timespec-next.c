@@ -2,6 +2,7 @@
 #include <systime.h>
 #include <assert.h>
 #include <ctype.h>
+#include <limits.h>
 #include <string.h>
 
 #include <msg/msg.h>
