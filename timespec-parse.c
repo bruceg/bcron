@@ -11,19 +11,21 @@ static int parse_value(const char* s, int* out,
   int v;
   int i;
   if (!isdigit(*s)) {
-    for (i = 0; table[i] != 0; ++i) {
-      int len;
-      if ((len = strlen(table[i])) == 0)
-	continue;
-      if (strncasecmp(table[i], s, len) == 0
-	  && !isalpha(s[len])) {
-	*out = i;
-	return len;
-      }
-      if (strncasecmp(table[i], s, 3) == 0
-	  && !isalpha(s[3])) {
-	*out = i;
-	return 3;
+    if (table != 0) {
+      for (i = 0; table[i] != 0; ++i) {
+	int len;
+	if ((len = strlen(table[i])) == 0)
+	  continue;
+	if (strncasecmp(table[i], s, len) == 0
+	    && !isalpha(s[len])) {
+	  *out = i;
+	  return len;
+	}
+	if (strncasecmp(table[i], s, 3) == 0
+	    && !isalpha(s[3])) {
+	  *out = i;
+	  return 3;
+	}
       }
     }
     return 0;
