@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.09
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.08
 
 - Reordered some things in bcron-exec to provide error emails more often
