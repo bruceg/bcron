@@ -184,15 +184,33 @@ static void checkdirs(int argc)
     trigger_pull(TRIGGER);
 }
 
+static void checkpaths(int argc, char* argv[])
+{
+  int i;
+  int j;
+  int k;
+  for (i = 0; i < argc; ++i) {
+    char* arg = argv[i];
+    /* Make sure all filenames are absolute. */
+    if (arg[0] != '/')
+      die1(111, "All filenames must be absolute");
+    /* Make sure there are no doubled slashes. */
+    for (j = k = 1; arg[j] != 0; ++j) {
+      if (arg[j] != '/'
+	  || arg[j-1] != '/')
+	arg[k++] = arg[j];
+    }
+    /* Strip off any trailing slashes. */
+    if (arg[k-1] == '/')
+      --k;
+    arg[k] = 0;
+  }
+}
+
 static void opendirs(int argc, char* argv[])
 {
   int i;
   struct ministat st;
-  /* Make sure all filenames are absolute. */
-  for (i = 0; i < argc; ++i) {
-    if (argv[i][0] != '/')
-      die1(111, "All filenames must be absolute");
-  }
   /* Setup the argument array. */
   if ((args = malloc(argc * sizeof *args)) == 0)
     die_oom(111);
@@ -249,6 +267,7 @@ int main(int argc, char* argv[])
   if (argc < 2)
     die1(111,
 	 "Must give at least one filename or directory on the command-line");
+  checkpaths(argc - 1, argv + 1);
   opendirs(argc - 1, argv + 1);
   if (chdir_bcron() != 0)
     die1sys(111, "Could not change directory");
