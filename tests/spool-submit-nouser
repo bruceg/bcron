@@ -1,0 +1,4 @@
+printf "Sxyzzy$USER\\0* * * * * echo hello\\n" | spoolcmd
+rm -f $CRONTABS/xyzzy$USER
+<result>
+28:DInvalid or unknown username,

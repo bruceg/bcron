@@ -1,0 +1,25 @@
+.TH bcron-exec 8
+.SH NAME
+bcron-exec \- Execute jobs on behalf of
+.B bcron-sched
+.SH SYNOPSIS
+.B bcron-exec
+[
+.I wrapper
+]
+.SH DESCRIPTION
+.B bcron-exec
+reads formatted program execution instructions from standard input and
+executes the appropriate program.  If the execution of the program
+produces any output, an email is produced and sent to the recipient
+given in the instructions.
+.P
+.B bcron-exec
+should normally be run by
+.B bcron-start
+in conjunction with
+.BR bcron-sched .
+.SH SEE ALSO
+bcron-sched(8), bcron-start(8)
+.SH AUTHOR
+Bruce Guenter <bruceg@em.ca>

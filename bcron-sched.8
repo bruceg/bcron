@@ -1,0 +1,29 @@
+.TH bcron-sched 8
+.SH NAME
+bcron-sched \- bcron system scheduler
+.SH SYNOPSIS
+.B bcron-sched
+.SH DESCRIPTION
+.B bcron-sched
+reads job descriptions from stored crontabs, determines when they need
+to be run, and writes execution commands to standard output for
+.B bcron-exec
+to execute.
+.P
+.B bcron-sched
+should normally be run by
+.B bcron-start
+in conjunction with
+.BR bcron-exec .
+.SH ENVIRONMENT
+.TP 5
+.B BCRON_SPOOL
+The spool directory for bcron.  Defaults to
+.IR /var/spool/cron .
+.SH FILES
+All files used by the program.  You should probably use the .I tag for
+these.
+.SH SEE ALSO
+bcron-exec(8), bcron-start(8), bcrontab(1)
+.SH AUTHOR
+Bruce Guenter <bruceg@em.ca>

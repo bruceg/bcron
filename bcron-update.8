@@ -1,0 +1,52 @@
+.TH bcron-update 8
+.SH NAME
+bcron-update \- Update system crontabs.
+.SH SYNOPSIS
+.B bcron-update
+.I path
+[
+.I path ...
+]
+.SH DESCRIPTION
+.B bcron-update
+polls the named files or directories periodically to see if there are
+any new, changed, or removed files.  When it detects changes, it mirrors
+those changes into the crontab spool directory.
+.B bcron-update
+runs as root in order to be able to read system files that would
+potentially be unreadable otherwise.
+.SH EXAMPLES
+To mirror modern vixie-cron's behavior, use:
+.EX
+bcron-update /etc/crontab /etc/cron.d
+.EE
+.SH ENVIRONMENT
+.TP 5
+.B BCRON_SPOOL
+The spool directory for bcron.  Defaults to
+.IR /var/spool/cron .
+.TP 5
+.B BCRON_USER
+After writing files and before moving them into their final location,
+.B bcron-update
+changes the ownership of the file to this user so that
+.B bcron-sched
+can read them.
+.SH SEE ALSO
+bcron-sched(8)
+.SH DIAGNOSTICS
+.B bcron-update
+outputs three different kinds of messages about actions it is taking.
+.TP 5
+.I Rescanning /etc/cron.d
+The named directory has been modified, and will be scanned to determine
+what files have been added or deleted.
+.TP 5
+.I -/etc/cron.d/oldfile
+The named file no longer exists and will be removed from the spool.
+.TP 5
+.I +/etc/cron.d/newfile
+The named file was either created or modified since the last scan, and
+will be copied into the spool.
+.SH AUTHOR
+Bruce Guenter <bruceg@em.ca>

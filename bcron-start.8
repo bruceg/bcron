@@ -1,0 +1,26 @@
+.TH bcron-start 8
+.SH NAME
+bcron-start \- Start the bcron scheduling system
+.SH SYNOPSIS
+.B bcron-start
+[
+.I exec-wrapper
+]
+.SH DESCRIPTION
+.B bcron-start
+.P
+.B bcron-exec
+should normally be run by
+.B bcron-start
+in conjunction with
+.BR bcron-sched .
+.SH ENVIRONMENT
+.TP 5
+.B BCRON_USER
+.B bcron-start
+drops root privileges and switches to this user before starting
+.BR bcron-sched .
+.SH SEE ALSO
+bcron-sched(8), bcron-exec(8)
+.SH AUTHOR
+Bruce Guenter <bruceg@em.ca>

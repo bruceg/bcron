@@ -1,0 +1,4 @@
+#!/bin/sh
+exec >/dev/null 2>&1
+exec \
+bcron-update /etc/crontab /etc/cron.d

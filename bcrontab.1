@@ -1,0 +1,79 @@
+.TH bcrontab 1
+.SH NAME
+bcrontab \- Manage users crontab files
+.SH SYNOPSIS
+.B bcrontab
+[
+.B -u user
+]
+.I file
+.P
+.B bcrontab
+[
+.B -u user
+] {
+.B -l
+|
+.B -r
+|
+.B -e
+}
+.SH DESCRIPTION
+.B bcrontab
+interfaces with the
+.B bcron-spool
+daemon to manage crontab files in the privileged spool directory.
+.SH OPTIONS
+.TP
+.B -u user
+Tell
+.B bcron-spool
+that we are acting on behalf of the named user.
+.B bcron-spool
+will only accept the username if
+.B bcrontab
+is running as either root or the same user ID as the named user.
+.TP
+.B -l
+List the cronab crontab to standard output.
+.TP
+.B -r
+Remove the user's crontab.
+.TP
+.B -e
+Edit the current crontab.
+.SH ENVIRONMENT
+.TP
+.B VISUAL
+If this is set, it is used as the editor to invoke to edit a crontab.
+.TP
+.B EDITOR
+If
+.B $VISUAL
+is not set and this is, it is used as the editor to invoke to edit a
+crontab.  If neither are set,
+.I /bin/vi
+is used.
+.TP BCRON_SOCKET
+The path to the named socket used to communicate with
+.BR bcron-spool .
+Defaults to
+.IR /etc/.bcron-spool .
+.TP
+.B LOGNAME
+.TP
+.B USER
+These two variables are used, in order, to determine the user name
+invoking the program.  One must be set if the
+.B -u
+option is not used.
+.SH FILES
+.B bcrontab
+tries to writes a temporary file into the current directory, and then
+into
+.I /tmp
+if that fails, in order to edit the current crontab.
+.SH SEE ALSO
+bcron-spool(8), crontab(5)
+.SH AUTHOR
+Bruce Guenter <bruceg@em.ca>

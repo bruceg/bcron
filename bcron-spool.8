@@ -1,0 +1,20 @@
+.TH bcron-spool 8
+.SH NAME
+bcron-spool \- Manage user crontab submissions
+.SH SYNOPSIS
+.B envuidgid $BCRON_USER unixserver -U /tmp/.bcron-spool bcron-spool
+.SH DESCRIPTION
+.B bcron-spool
+manipulates the bcron spool on behalf of users.  It accepts one of three
+commands: List an existing file, remove an existing file, copy given
+data into a new file.  The name of the file in the spool directory is
+restricted to the username of the connecting process.
+.SH ENVIRONMENT
+.TP 5
+.B BCRON_SPOOL
+The spool directory for bcron.  Defaults to
+.IR /var/spool/cron .
+.SH SEE ALSO
+bcron-sched(8), bcrontab(1)
+.SH AUTHOR
+Bruce Guenter <bruceg@em.ca>

@@ -1,0 +1,10 @@
+#!/bin/sh
+exec >/dev/null 2>&1
+exec \
+envdir /etc/bcron \
+envuidgid cron \
+sh -c '
+exec \
+unixserver -U ${BCRON_SOCKET:-/tmp/.bcron-spool} \
+bcron-spool
+'

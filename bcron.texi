@@ -1,0 +1,573 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename bcron.texi
+@settitle bcron documentation
+@setchapternewpage off
+@paragraphindent 5
+@footnotestyle end
+@c %**end of header
+
+@ifinfo
+Copyright @copyright{} 2004 Bruce Guenter
+@end ifinfo
+
+@titlepage
+@title bcron documentation
+@author Bruce Guenter
+@subtitle @today{}
+@end titlepage
+
+@ifinfo
+This document explains ...
+@end ifinfo
+
+@c ****************************************************************************
+@chapter Introduction
+
+Name comes from: Busy/Bee/Bruce's/Better cron.
+
+@section Problems With Other cron Systems
+
+@subsection vixie-cron
+
+@itemize
+
+@item Too many bugs
+The last official release of vixie-cron was in December of 1993.
+Since then, many security holes and other bugs have been found,
+requiring every vendor to distribute a multiply-patched version of
+this system.  Most vendors have a different set of patches, making
+this a bit of a moving target.
+
+@item Can't handle DST changes
+vixie-cron's mode of operations is to wake up every minute and
+determine, with no history, what jobs to run.  When DST changes, this
+causes some jobs to be either skipped or run twice.
+
+@end itemize
+
+@subsection fcron
+
+@itemize
+
+@item Parsing issues
+If a job starts with a word (terminated by any non-word character,
+like @code{/}) that happens to also be a username, fcron interprets
+this word as the userid to run the job under, even for non-root users.
+This causes problems for jobs line @code{bin/something} when user
+@code{bin} exists.
+
+@item No support for @file{/etc/cron.d}
+
+@item No support for @file{/etc/crontab}
+
+@item Gratuitious incompatibilities with vixie-cron
+Jobs are run with the login shell for the user instead of
+@file{/bin/sh}.  The default mode of execution prevents the same job
+from running multiple times (a good option, but bad default).
+@code{MAILTO} can only contain a username, not a full email address.
+
+@end itemize
+
+@subsection anacron
+
+Anacron is only really useful for running jobs once a day or less
+frequently.  From what I've seen, it's good at what it does, just not
+useful at much else.
+
+@subsection dcron
+
+@itemize
+
+@item No support for @file{/etc/cron.d}
+
+@item No support for @file{/etc/crontab}
+
+@item No easy way of emulating support for system crontabs
+dcron's crontab format does not include a ``username'' column, and as
+such makes it nearly impossible to even emulate system crontabs.
+
+@item Unusual or broken handling of DST changes
+From reading the source, dcron only handles cases where the linear
+time jumps.  When DST changes, linear time does not change, and so
+dcron effectively does not handle this situation.
+
+@end itemize
+
+@section Requirements
+
+@itemize
+
+@item Security
+
+I am choosing to make a number of relatively unorthodox choices in
+order to avoid many of the security issues that have plagued
+vixie-cron and other related systems.
+
+@item External compatability with vixie-cron
+
+In particular, the system must support:
+@itemize
+@item crontabs in the same file format as vixie-cron
+@item crontabs submitted via a command-line compatable @file{crontab}
+program
+@item mail is sent to @code{$MAILTO} if the job produces any output
+(and possibly if the job exits non-zero)
+@end itemize
+
+@item Support for system crontabs
+
+This means that the system MUST support:
+@itemize
+@item System crontab entries in @file{/etc/crontab}
+@item System crontab entries in @file{/etc/cron.d/*}
+@end itemize
+System crontab entries are additionally differentiated from normal
+ones by having a ``username'' column immediately preceding the
+command.
+
+@item Intelligent handling of DST time changes
+
+One of the biggest frustrations I have had with dealing with
+vixie-cron is its complete inability to deal with time jumps in an
+intelligent manner.  In particular, when DST changes happen, jobs will
+either get skipped (when time jumps forward) or executed twice (when
+time jumps backwards).  This is unacceptable.
+
+@item Allow setting ulimits before executing commands
+
+In one of the target installations, we need to set up ulimits
+(limiting CPU time and memory) before executing commands.  It would be
+easy enough to ulimit the entire daemon, but then the daemon itself
+would be vulnerable to getting killed when it has run for long enough.
+Our current setup is to run jobs through a global wrapper script,
+which can set any necessary limits (or anything else) and then execute
+the job.
+
+@end itemize
+
+@section Design Choices
+
+@table @asis
+
+@item Use local socket to submit files.
+
+There are two basic methods of submitting crontab files:
+@enumerate
+@item Use a setuid program to write directly into spool files.
+@item Set up a local socket to submit jobs to a daemon.
+@end enumerate
+@footnote{There are actually others, but these two are the most simple
+and portable of the choices.  See also
+@uref{http://cr.yp.to/docs/secureipc.html}} Using a setuid submission
+agent was discarded to prevent the possibility of all the bugs that
+have plagued other setuid submission agents.  The socket protocol is
+deliberately very simple, to make the submission agent foolproof.
+
+@item Multiple process daemon.
+
+By seperating job submission from job execution, exploiting the system
+to run arbitrary jobs as privileged users is made even harder.  It
+also makes the design of those individual programs much simpler.
+
+@end table
+
+@section vixie-cron Patches
+
+This section lists all the non-trivial patches found for vixie-cron,
+what problem they appear to address, and (if appropriate) how bcron
+will avoid the same problem.  The patches listed come from multiple
+sources, including the latest RPM (Fedora Core IIRC).
+
+@table @asis
+
+@item 0days.patch
+
+This patch modifies the @file{crontab.5} man page to remove allowing
+@samp{0} for day of month or month numbers.
+
+@item badsig.patch
+
+On some systems, signal handlers are single-shot.  This patch modifies
+the SIGHUP handler to reactivate itself before it returns.  bcron will
+use the bglibs signal functions, which use sigaction to create
+suitable handlers, where appropriate.  bcron doesn't use signals for
+any purpose.
+
+@c uses named pipe triggers
+@c instead of signals to deliver notifications, removing the need for
+@c most signal handlers.
+
+@item buffer.patch
+
+This patch increases the maximum username length from 20 to 32, and
+modifies calls to strcpy to use strncpy to ensure all string copies
+are length bounded.  bcron uses dynamically allocated strings to
+eliminate the possibility of buffer overflows.
+
+@item close_stdin.diff
+
+This patch modifies the cron daemon to close stdin, stdout, and stderr
+on startup, and to reopen them as @file{/dev/null}.  The bcron daemons
+run under supervise, and have no need of such handling.
+
+@item crond.patch
+
+Adds support for @file{/etc/cron.d}
+
+@item cront_stdin.patch
+
+Appears to modify @file{crontab}'s command-line handling such that no
+argument is interpreted as to read the crontab from standard input.
+
+@item crontab.5.diff
+
+Documents several builtin macros to replace the first 5 fields.  This
+macros consist of: @samp{@@reboot}, @samp{@@yearly},
+@samp{@@annually}, @samp{@@monthly}, @samp{@@weekly}, @samp{@@daily},
+@samp{@@midnight}, and @samp{@@hourly}.  bcron will not, at least
+initially, support these macros.
+
+@item crontab.patch
+
+Modifies crontab to use strncpy and snprintf when writing into
+length-bounded strings.
+
+@item crontabloc.patch
+
+Patches the crontab man page to reference @file{/etc/crontab}.
+
+@item dst.patch
+
+Patches the crontab man page to point out that DST may cause jobs to
+be skipped or repeated.
+
+@item name.patch
+
+Appears to modify how the cron daemon handles sending messages to
+syslog.  bcron will log messages to stderr, avoiding syslog entirely.
+
+@item nodot.patch
+
+Adds @samp{-i} to the list of arguments sent to sendmail (result is
+@samp{-FCronDaemon -i -odi -oem}).  Only useful for sendmail, but
+still needed.
+
+@item root_-u-85879.patch
+
+Sanity checks the use of @samp{-u} against UID and/or root.
+
+@item security2.patch
+
+Does some sanity checking on mailto, and does a setuid before sending
+mail.  bcron plays safe with mailto by putting it into a message
+header, and always drops root privileges before executing commands.
+
+@item sigchld.patch
+
+Return the SIGCHLD handler to its default state before executing
+commands.
+
+@item sprintf.patch
+
+More sprintf -> snprintf conversions.
+
+@item time.patch
+
+Sync all the crontabs before sleeping to handle changes in the system
+time.
+
+@item timeaftertime.patch
+
+The previous patch created double execution issues with small
+backwards adjustments in the clock time.
+
+@end table
+
+@c ****************************************************************************
+@chapter Design Notes
+
+@section Fundamental Operations
+
+The following is a list of all the ``core'' operations that must be
+provided based on the requirements.
+
+@table @asis
+
+@item Execute jobs
+Strictly speaking, this is the only role that requires superuser
+privileges.  Every other job should run as non-root.
+
+@item Schedule jobs
+Scan all the known jobs, determine which one needs to be executed
+next, and sleep until that time arrives.
+
+@item Accept new user crontabs
+Listen for connections on a socket and accept job data.
+
+@item Parse crontabs into internal job format
+Read the submitted files and parse their contents into a structured
+format.
+
+@item Check for new system crontabs
+Check @file{/etc/crontab} and @file{/etc/cron.d/*} every minute for
+modifications.  If any files are changed, added, or deleted, add the
+listed jobs.  On systems with tightened security, these files may only
+be readable by @samp{root}.
+
+@item Manage saved state
+All jobs need to be saved to disk along with when they were last
+executed, in order to determine when they should be next executed.
+
+@end table
+
+@section Programs
+
+@table @file
+
+@item bcron-sched
+Top-level scheduler agent.  Starts up as root, runs @file{bcron-exec},
+and then drops root permanently.
+
+@item bcron-exec
+Accepts jobs to run from @file{bcron-sched} on stdin, writes exit
+status back to stdout.
+
+@item bcron-spool
+Manages the cron spool: receives jobs submitted from users, writes
+them to files in @file{/var/spool/cron/crontabs}, and notifies
+@file{bcron-sched}.  This needs to be run from @file{unixserver} in
+order to securely determine the invoking UID.  This program will
+optionally run the file through an external filter, specified on the
+command line, before installing the job.
+
+@item bcron-update
+Watches for changes to the system crontabs and notifies
+@file{bcron-sched}.
+
+@end table
+
+@section Files
+
+@subsection Hierarchy
+
+@table @file
+
+@item /etc/cron.d/
+
+@item /etc/cron.d/*
+
+@item /etc/crontab
+The above three items are read
+
+@item /var/spool/cron/
+
+@item /var/spool/cron/crontabs/
+Directory containing raw (text) crontab files.
+
+@item /var/spool/cron/bcron/
+Directory containing saved state from the crontabs.
+
+@item /var/spool/cron/bcron/:etc:cron.d:*
+Colon is chosen as a seperator because usernames cannot contain
+colons due to the format of @file{/etc/passwd}.
+
+@item /var/spool/cron/bcron/:etc:crontab
+
+@item /var/spool/cron/tmp/
+Temporary directory for files as they are written.
+
+@item /var/spool/cron/trigger
+Named pipe used to tell @file{bcron-sched} to rescan the crontabs.
+
+@end table
+
+@ignore
+
+@subsection Compiled File Format
+
+A compled data file is composed of zero or more sections.  Each
+section is composed of a 32-bit length followed by that many bytes of
+data.  The first byte of the data indicates what kind of section it
+is.
+
+@table @code
+
+@item 0
+Standard job, contains:
+
+@itemize
+@item Time of last execution
+@item Options bitmap (32 bits)
+@item Minute bitmap (60 of 64 bits)
+@item Hour bitmap (24 of 32 bits)
+@item Day-of-month bitmap (31 of 32 bits)
+@item Month bitmap (12 of 32 bits)
+@item Day-of-week bitmap (7 of 32 bits)
+@item Run-as username (NUL terminated)
+@item Command
+@end itemize
+
+@end table
+
+Options:
+@itemize
+@item SERIALIZE
+Jobs with this option bit set will not be run if the same job is
+already running.
+@end itemize
+
+Note: All numbers are in LSB format unless otherwise indicated.
+Timestamps represented as the number of minutes since the Epoch
+(00:00:00 UTC, January 1, 1970).
+
+@end ignore
+
+@section Inter-Process Communication
+
+All communication between programs is done in terms of either
+``packets'' or ``lines''.  A packet is formatted as a
+@uref{http://cr.yp.to/proto/netstrings.txt,netstring}.  That is, a
+packet of length @var{N} is encoded as the ASCII decimal value of
+@var{N}, @samp{:}, N bytes of data, terminated by @samp{,}.  A line is
+simply a series of non-NUL bytes terminated by a NUL byte.
+
+@subsection Job Submission Protocol
+
+Client sends a packet containing a single byte command followed by the
+username.  If the command requires additional data, it is seperated
+from the username by a NUL byte.  Server responds with a packet
+containing a response byte followed by a text message.
+
+Client command codes are:
+@table @code
+@item S
+Submit a user crontab file.  The content string contains the entire
+crontab file.
+@item L
+List the current crontab file.  No content string.
+@item R
+Remove any previously submitted crontab file.  No content string.
+@end table
+
+Server response codes are:
+@table @code
+@item K
+Command was successful; file was parsed and accepted.
+@item D
+File could not be parsed.
+@item Z
+Temporary internal error.
+@end table
+
+@subsection bcron-exec Protocol
+
+Input packets contain a series of four or more NUL-terminated lines:
+@table @code
+@item ID
+@item username
+@item command
+@item environment
+The environment is optional.  If the environment contains
+@code{SHELL}, it replaces the default shell (@samp{/bin/sh}).  If the
+environment contains @code{MAILTO}, it overrides the default mailing
+address derived from the username.
+@end table
+
+Output packet:
+@table @code
+@item ID
+@item NUL
+@item response code
+@item text message
+@end table
+Output packets are sent asynchronously with respect to input packets.
+
+@c ****************************************************************************
+@chapter Configuration
+
+@section Environment Variables
+
+@table @code
+
+@item BCRON_SPOOL
+The base directory for bcron's files.  Defaults to
+@file{/var/spool/cron}.
+
+@item BCRON_USER
+The non-root user name to switch to for all processes that don't
+require root privileges.  Defaults to @samp{cron}.
+
+@item BCRON_MAXSIZE
+The maximum size (in bytes) of a single user crontab.  Defaults to
+unlimited.
+
+@item BCRON_MAXJOBS
+The maximum number of jobs in a single user crontab.  Defaults to
+unlimited.
+
+@item BCRON_SOCKET
+The full path to the UNIX-domain socket used to submit crontabs.
+Defaults to @file{/tmp/.bcron-spool}.
+
+@end table
+
+@c ****************************************************************************
+@chapter Implementation Notes
+
+@section Job Scheduler
+
+Getting the job scheduler to work correctly for all possible cases
+consumed more time than all the other parts of the program put
+together, and this is @strong{all} because of the problems that
+daylight savings causes.
+
+The ultimate goal is this: given a linear timestamp, determine the
+@strong{next} linear timestamp after which a job must be run.
+``Linear time'' means the number of seconds since an epoch, in this
+case the UNIX epoch, midnight GMT January 1st, 1970.  To contrast,
+``local time'' means the time in terms of years, months, days, hours,
+minutes, and seconds in the current locale.
+
+The time specification for jobs is composed of a set of local time
+bitmaps quantifying under what time conditions the job should run,
+assuming the conditions are evaluated every minute.  The maximum
+scheduling resolution is one minute.
+
+The effective algorithm is to step through every possible minute until
+the local time matches all the conditions in the time specification.
+This would result in an algorithm that could take up to 527,040-1
+steps to complete, which is far too big a number to evaluate on every
+job.  So, the algorithm optimizes away all impossible cases to make
+much larger time jumps.  For example, if the job cannot be scheduled
+on the current day, skip over the entire day instead of just the
+current minute.
+
+There are two ways I approached this task.  First, do all calculations
+in terms of local time, and return the linear time at the last step.
+Second, do as many calculations as possible in terms of linear time,
+which can be returned directly.  Both methods start with the same
+input data: The current linear time, and a set of bitmasks
+representing under what time conditions the job should run.
+
+The first method was the most straightforward to get mostly working,
+until I started to consider the implications of DST.  During the
+transition from normal time to DST, an hour is skipped.  This is no
+big deal, as @code{mktime} will (or can be made to) compensate by
+picking the next valid hour when presented with a ``missing'' hour.
+On the other hand, there are many gotchas when dealing with the
+duplicated hour.  For example, hourly jobs need to get scheduled on
+both, but daily jobs on only one.
+
+The second method was harder to get working initially, as the math is
+more complicated.  Despite doing many calculations in terms of linear
+time, this method still needs to keep track of the local time, in
+order to check against the bitmaps as well as to determine things like
+when the next day or month should start.  This approach proved to be
+much easier to work with, once the initial math was done, and easier
+to make work correctly with regards to DST transitions.
+
+@c ****************************************************************************
+@contents
+
+@bye

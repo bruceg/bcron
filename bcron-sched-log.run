@@ -1,0 +1,4 @@
+#!/bin/sh
+exec >/dev/null 2>&1
+exec \
+multilog t /var/log/bcron

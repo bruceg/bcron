@@ -1,0 +1,48 @@
+@PACKAGE@
+Short Description
+Bruce Guenter <bruceg@em.ca>
+Version @VERSION@
+@TODAY@
+
+This is bcron, a new cron system.
+
+A mailing list has been set up to discuss this and other packages.
+To subscribe, send an email to:
+	bgware-subscribe@lists.untroubled.org
+A mailing list archive is available at:
+	http://lists.untroubled.org/?list=bgware
+
+Development versions of @PACKAGE@ are available via Subversion at:
+	svn://bruce-guenter.dyndns.org/@PACKAGE@/trunk
+
+Requirements:
+
+-
+
+Installation:
+
+- Make sure the latest version of bglibs from
+  http://untroubled.org/bglibs/ is compiled and installed.
+- Build the sources by running "make"
+- Run the "instshow" command to see what will be installed (optional).
+- After the package has been compiled, run the following commands as root:
+	./installer
+	./instcheck
+  These commands will produce no output if there are no errors.
+
+Configuration:
+
+-
+
+Operation:
+
+-
+
+Security Notes:
+
+-
+
+This package is Copyright(C) 2004 Bruce Guenter or FutureQuest, Inc.,
+and may be copied according to the GNU GENERAL PUBLIC LICENSE (GPL)
+Version 2 or a later version.  A copy of this license is included with
+this package.  This package comes with no warranty of any kind.

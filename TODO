@@ -1,0 +1,34 @@
+-Fix README
+-Fix description in spec
+-Fix crontab.5 man page.
+
+crontab.c:crontab_load:
+-merge jobs together, not just drop them
+
+timespec-next.c:timespec_next:
+-Fix documentation on scheduling limits (10 year limit)
+
+bcron-exec:
+*Don't exit until running commands have completed
+-Drop the use of command IDs
+-Don't report on execution success
+-(minor)Figure out how to open the temporary file with O_APPEND
+
+bcron-start:
+
+bcron-sched:
+-If time has jumped backwards or forwards by too large an interval (1
+hour?), recalculate all times.
+-Fix spurious double-reloading of cronjobs updated by bcron-update.
+
+bcron-update:
+-Update just before the top of the minute, instead of just every minute?
+
+bcron-spool:
+-Implement support for $BCRON_MAXSIZE and $BCRON_MAXJOBS
+
+bcrontab:
+-Make the temporary directory configurable via $TMPDIR or something.
+
+tests:
+-Write more tests!

@@ -1,0 +1,4 @@
+printf "Sroot\\0* * * * * echo hello\\n" | spoolcmd
+rm -f $CRONTABS/root
+<result>
+37:DUsername does not match invoking UID,

@@ -1,0 +1,6 @@
+printf "S$USER\\0* * * * * echo hello\\n" | spoolcmd wc
+cat $CRONTABS/$USER
+rm -f $CRONTABS/$USER
+<result>
+29:KCrontab successfully written,
+ 1  7 21

@@ -1,0 +1,3 @@
+echo -n "Rxyzzy$USER" | spoolcmd
+<result>
+28:DInvalid or unknown username,
