@@ -52,6 +52,8 @@ static void copy(const char* pathin,
   close(fdin);
   if (fchown(fdout, cronpw->pw_uid, cronpw->pw_gid) != 0)
     die3sys(111, "Could not change ownership on '", tempname.s, "'");
+  if (fchmod(fdout, 0400) != 0)
+    die3sys(111, "Could not change permissions on '", tempname.s, "'");
   if (close(fdout) != 0)
     die3sys(111, "Could not write '", tempname.s, "'");
   if (rename(tempname.s, pathout) != 0)

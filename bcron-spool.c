@@ -3,6 +3,7 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -94,6 +95,7 @@ static void cmd_store(str* data)
     respond("ZCould not create temporary file");
   if (write(fd, data->s + i, data->len - i) != (long)(data->len - i)
       || (fd = fixup(fd)) == -1
+      || fchmod(fd, 0400) == -1
       || close(fd) != 0)
     respond("ZCould not write temporary file");
   if (rename(tempname.s, filename.s) != 0)
