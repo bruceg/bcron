@@ -1,5 +1,6 @@
 #include <sysdeps.h>
 #include <ctype.h>
+#include <pwd.h>
 #include <string.h>
 
 #include <iobuf/iobuf.h>
@@ -61,6 +62,10 @@ static struct job* parse_job(str* line,
       return 0;
     *s++ = 0;
     while (*s != 0 && isspace(*s)) ++s;
+    if (getpwnam(runas) == 0) {
+      warn3("Unknown user: '", runas, "'");
+      return 0;
+    }
   }
   if (*s == 0)
     return 0;
@@ -93,6 +98,8 @@ int crontab_parse(struct crontab* c, str* data, const char* runas)
 	tail->next = job;
       tail = job;
     }
+    else
+      warn3("Ignoring unparseable line: '", line.s, "'");
   }
   c->jobs = head;
   return 1;
