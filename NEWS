@@ -3,6 +3,8 @@ Changes in version 0.07
 
 - Added logging of warnings when crontabs fail to be parsed properly.
 
+- Added sending email notification if a job was killed.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

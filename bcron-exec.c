@@ -247,20 +247,30 @@ static void end_slot(int slot, int status)
       report(slots[slot].id.s, "KJob complete, email sent");
   }
   else {
+    /* No header, no possible way to send email. */
     if (slots[slot].headerlen == 0)
       report(slots[slot].id.s, "KJob complete");
-    else if (fstat(slots[slot].tmpfd, &st) == -1)
-      failsys(slots[slot].id.s, "ZCould not fstat");
-    else if (st.st_size > slots[slot].headerlen) {
-      if (lseek(slots[slot].tmpfd, SEEK_SET, 0) != 0)
-	failsys(slots[slot].id.s, "ZCould not lseek");
-      else {
-	forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
-	slots[slot].sending_email = 1;
+    else {
+      /* If the job crashed, make sure it is noted. */
+      if (WIFSIGNALED(status)) {
+	wrap_str(str_copys(&tmp, "\n\nJob was killed by signal #"));
+	wrap_str(str_cati(&tmp, WTERMSIG(status)));
+	wrap_str(str_catc(&tmp, '\n'));
+	write(slots[slot].tmpfd, tmp.s, tmp.len);
       }
+      if (fstat(slots[slot].tmpfd, &st) == -1)
+	failsys(slots[slot].id.s, "ZCould not fstat");
+      else if (st.st_size > slots[slot].headerlen) {
+	if (lseek(slots[slot].tmpfd, SEEK_SET, 0) != 0)
+	  failsys(slots[slot].id.s, "ZCould not lseek");
+	else {
+	  forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
+	  slots[slot].sending_email = 1;
+	}
+      }
+      else
+	report(slots[slot].id.s, "KJob complete");
     }
-    else
-      report(slots[slot].id.s, "KJob complete");
     /* To simplify the procedure, close the temporary file early.
      * The email sender still has it open, and will effect the final
      * deletion of the file when it completes. */
