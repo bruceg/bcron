@@ -1,6 +1,6 @@
 \input texinfo @c -*-texinfo-*-
 @c %**start of header
-@setfilename bcron.texi
+@setfilename bcron.info
 @settitle bcron documentation
 @setchapternewpage off
 @paragraphindent 5
@@ -21,13 +21,39 @@ Copyright @copyright{} 2004 Bruce Guenter
 This document explains ...
 @end ifinfo
 
+@node Top, Introduction, (dir), (dir)
+
+@menu
+* Introduction::                
+* Design Notes::                
+* Configuration::               
+* Implementation Notes::        
+@end menu
+
 @c ****************************************************************************
+@node Introduction, Design Notes, Top, Top
 @chapter Introduction
 
 Name comes from: Bruce's / Better / Busy cron.
 
+@menu
+* Problems::                    
+* Requirements::                
+* Design Choices::              
+* vixie-cron Patches::          
+@end menu
+
+@node Problems, Requirements, Introduction, Introduction
 @section Problems With Other cron Systems
 
+@menu
+* Problems with vixie-cron::    
+* Problems with fcron::         
+* Problems with anacron::       
+* Problems with dcron::         
+@end menu
+
+@node Problems with vixie-cron, Problems with fcron, Problems, Problems
 @subsection vixie-cron
 
 @itemize
@@ -46,6 +72,7 @@ causes some jobs to be either skipped or run twice.
 
 @end itemize
 
+@node Problems with fcron, Problems with anacron, Problems with vixie-cron, Problems
 @subsection fcron
 
 @itemize
@@ -69,12 +96,14 @@ from running multiple times (a good option, but bad default).
 
 @end itemize
 
+@node Problems with anacron, Problems with dcron, Problems with fcron, Problems
 @subsection anacron
 
 Anacron is only really useful for running jobs once a day or less
 frequently.  From what I've seen, it's good at what it does, just not
 useful at much else.
 
+@node Problems with dcron,  , Problems with anacron, Problems
 @subsection dcron
 
 @itemize
@@ -94,6 +123,7 @@ dcron effectively does not handle this situation.
 
 @end itemize
 
+@node Requirements, Design Choices, Problems, Introduction
 @section Requirements
 
 @itemize
@@ -146,6 +176,7 @@ the job.
 
 @end itemize
 
+@node Design Choices, vixie-cron Patches, Requirements, Introduction
 @section Design Choices
 
 @table @asis
@@ -172,6 +203,7 @@ also makes the design of those individual programs much simpler.
 
 @end table
 
+@node vixie-cron Patches,  , Design Choices, Introduction
 @section vixie-cron Patches
 
 This section lists all the non-trivial patches found for vixie-cron,
@@ -285,8 +317,17 @@ backwards adjustments in the clock time.
 @end table
 
 @c ****************************************************************************
+@node Design Notes, Configuration, Introduction, Top
 @chapter Design Notes
 
+@menu
+* Fundamental Operations::      
+* Programs::                    
+* Files::                       
+* Inter-Process Communication::  
+@end menu
+
+@node Fundamental Operations, Programs, Design Notes, Design Notes
 @section Fundamental Operations
 
 The following is a list of all the ``core'' operations that must be
@@ -321,6 +362,7 @@ executed, in order to determine when they should be next executed.
 
 @end table
 
+@node Programs, Files, Fundamental Operations, Design Notes
 @section Programs
 
 @table @file
@@ -347,9 +389,15 @@ Watches for changes to the system crontabs and notifies
 
 @end table
 
+@node Files, Inter-Process Communication, Programs, Design Notes
 @section Files
 
-@subsection Hierarchy
+@menu
+* File Hierarchy::              
+@end menu
+
+@node File Hierarchy,  , Files, Files
+@subsection File Hierarchy
 
 @table @file
 
@@ -427,6 +475,7 @@ Timestamps represented as the number of minutes since the Epoch
 
 @end ignore
 
+@node Inter-Process Communication,  , Files, Design Notes
 @section Inter-Process Communication
 
 All communication between programs is done in terms of either
@@ -436,6 +485,12 @@ packet of length @var{N} is encoded as the ASCII decimal value of
 @var{N}, @samp{:}, N bytes of data, terminated by @samp{,}.  A line is
 simply a series of non-NUL bytes terminated by a NUL byte.
 
+@menu
+* Job Submission Protocol::     
+* bcron-exec Protocol::         
+@end menu
+
+@node Job Submission Protocol, bcron-exec Protocol, Inter-Process Communication, Inter-Process Communication
 @subsection Job Submission Protocol
 
 Client sends a packet containing a single byte command followed by the
@@ -467,6 +522,7 @@ File could not be parsed.
 Temporary internal error.
 @end table
 
+@node bcron-exec Protocol,  , Job Submission Protocol, Inter-Process Communication
 @subsection bcron-exec Protocol
 
 Input packets contain a series of four or more NUL-terminated lines:
@@ -491,8 +547,14 @@ Output packet:
 Output packets are sent asynchronously with respect to input packets.
 
 @c ****************************************************************************
+@node Configuration, Implementation Notes, Design Notes, Top
 @chapter Configuration
 
+@menu
+* Environment Variables::       
+@end menu
+
+@node Environment Variables,  , Configuration, Configuration
 @section Environment Variables
 
 @table @code
@@ -520,8 +582,14 @@ Defaults to @file{/tmp/.bcron-spool}.
 @end table
 
 @c ****************************************************************************
+@node Implementation Notes,  , Configuration, Top
 @chapter Implementation Notes
 
+@menu
+* Job Scheduler::               
+@end menu
+
+@node Job Scheduler,  , Implementation Notes, Implementation Notes
 @section Job Scheduler
 
 Getting the job scheduler to work correctly for all possible cases
