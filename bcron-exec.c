@@ -105,10 +105,14 @@ static void exec_cmd(int fdin, int fdout,
 		     const str* env,
 		     const struct passwd* pw)
 {
-  initgroups(pw->pw_name, pw->pw_gid);
-  if (setgid(pw->pw_gid) == -1) die1sys(111, "Could not setgid");
-  if (setuid(pw->pw_uid) == -1) die1sys(111, "Could not setuid");
-  if (chdir(pw->pw_dir) == -1) die1sys(111, "Could not change directory");
+  if (initgroups(pw->pw_name, pw->pw_gid) != 0)
+    die1sys(111, "Could not initgroups");
+  if (setgid(pw->pw_gid) != 0)
+    die1sys(111, "Could not setgid");
+  if (setuid(pw->pw_uid) != 0)
+    die1sys(111, "Could not setuid");
+  if (chdir(pw->pw_dir) != 0)
+    die1sys(111, "Could not change directory");
   if (env)
     if ((environ = envstr_make_array(env)) == 0)
       die_oom(111);
