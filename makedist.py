@@ -16,7 +16,7 @@ EXTRAS = [
 	'NEWS',
 	'README',
 	'TODO',
-	#'doc/html',
+	'bcron.html',
 	]
 
 # Set RPMUPLOAD to a list of additional hostname/path destinations to
