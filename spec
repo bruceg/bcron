@@ -52,6 +52,28 @@ mkdir -p %{buildroot}/etc/cron.d
 %clean
 rm -rf %{buildroot}
 
+%post
+if [ "$1" = 1 ]; then
+  for svc in bcron-sched bcron-spool bcron-update; do
+    if ! [ -e /service/$svc ]; then
+      svc-add $svc
+    fi
+  done
+else
+  for svc in bcron-sched bcron-spool bcron-update; do
+    svc -t /service/$svc
+  done
+fi
+
+%preun
+if [ "$1" = 0 ]; then
+  for svc in bcron-sched bcron-spool bcron-update; do
+    if [ -L /service/$svc ]; then
+      svc-remove $svc
+    fi
+  done
+fi
+
 %files
 %defattr(-,root,root)
 %doc ANNOUNCEMENT COPYING NEWS README # bcron.texi *.html
