@@ -81,7 +81,7 @@ causes some jobs to be either skipped or run twice.
 If a job starts with a word (terminated by any non-word character,
 like @code{/}) that happens to also be a username, fcron interprets
 this word as the userid to run the job under, even for non-root users.
-This causes problems for jobs line @code{bin/something} when user
+This causes problems for jobs like @code{bin/something} when user
 @code{bin} exists.
 
 @item No support for @file{/etc/cron.d}
