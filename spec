@@ -92,7 +92,7 @@ fi
 %defattr(-,root,root)
 
 %doc ANNOUNCEMENT COPYING NEWS README
-# bcron.texi *.html
+%doc bcron.texi bcron.html
 
 %config %dir /etc/bcron
 %config %dir /etc/cron.d
