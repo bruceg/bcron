@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.04
 
+- Fixed (for good this time?) the bug in bcron-exec causing delayed
+  execution of programs.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

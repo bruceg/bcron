@@ -301,7 +301,7 @@ static void handle_child(void)
   pid_t pid;
   int slot;
   int status;
-  while ((pid = waitpid(-1, &status, WNOHANG)) != -1) {
+  while ((pid = waitpid(-1, &status, WNOHANG)) != -1 && pid != 0) {
     for (slot = 0; slot < SLOT_MAX; ++slot) {
       if (slots[slot].pid == pid) {
 	end_slot(slot, status);
