@@ -1,5 +1,3 @@
--FIXME: make sure to send no mail if MAILTO=""
-
 -FIXME: Disallow setting $LOGNAME and $USER in crontabs.
 
 -Add support for binary (pre-parsed) crontabs.
