@@ -3,6 +3,9 @@ Changes in version 0.06
 
 - Added support for listing all system crontabs.
 
+- bcron-exec now waits until all the programs its running have exited so
+  that email gets sent properly.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -9,7 +9,6 @@ timespec-next.c:timespec_next:
 -Fix documentation on scheduling limits (10 year limit)
 
 bcron-exec:
-*Don't exit until running commands have completed
 -Drop the use of command IDs
 -Don't report on execution success
 -(minor)Figure out how to open the temporary file with O_APPEND

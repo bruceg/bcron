@@ -38,6 +38,7 @@ struct slot
   struct passwd pw;
 };
 static struct slot slots[SLOT_MAX];
+static int slots_used = 0;
 
 static const char* sendmail[7] = {
   "/usr/sbin/sendmail", "-FCronDaemon", "-i", "-odi", "-oem", "-t", 0
@@ -105,7 +106,7 @@ static void exec_cmd(int fdin, int fdout,
 		     const str* env,
 		     const struct passwd* pw)
 {
-  if (initgroups(pw->pw_name, pw->pw_gid) != 0)
+  if (0 && initgroups(pw->pw_name, pw->pw_gid) != 0)
     die1sys(111, "Could not initgroups");
   if (setgid(pw->pw_gid) != 0)
     die1sys(111, "Could not setgid");
@@ -140,6 +141,7 @@ static int forkexec_slot(int slot, int fdin, int fdout,
     exec_cmd(fdin, fdout, argv, env, pw);
   }
   slots[slot].pid = pid;
+  ++slots_used;
   return 1;
 }
 
@@ -236,6 +238,7 @@ static void end_slot(int slot, int status)
 {
   struct stat st;
   slots[slot].pid = 0;
+  --slots_used;
   if (slots[slot].sending_email) {
     slots[slot].sending_email = 0;
     if (status)
@@ -311,12 +314,12 @@ static void handle_packet(struct connection* c)
   start_slot(slot, command, envstart);
 }
 
-static void handle_child(void)
+static void handle_child(int wnh)
 {
   pid_t pid;
   int slot;
   int status;
-  while ((pid = waitpid(-1, &status, WNOHANG)) != -1 && pid != 0) {
+  while ((pid = waitpid(-1, &status, wnh)) != -1 && pid != 0) {
     for (slot = 0; slot < SLOT_MAX; ++slot) {
       if (slots[slot].pid == pid) {
 	end_slot(slot, status);
@@ -355,16 +358,19 @@ int main(int argc, char* argv[])
   fds[0].events = IOPOLL_READ;
   fds[1].fd = selfpipe;
   fds[1].events = IOPOLL_READ;
-  while (iopoll_restart(fds, 2, -1) != -1) {
-    if (fds[0].revents) {
+  for (;;) {
+    if (iopoll_restart(fds, 2, -1) == -1)
+      die1sys(111, "Poll failed");
+    if (fds[0].revents)
       if (connection_read(&conn, handle_packet) <= 0)
-	return 0;
-    }
+	break;
     if (fds[1].revents) {
       read(selfpipe, &i, 1);
-      handle_child();
+      handle_child(WNOHANG);
     }
   }
-  die1sys(111, "Poll failed");
-  return 1;
+  msg1("Waiting for remaining slots to complete");
+  while (slots_used > 0)
+    handle_child(0);
+  return 0;
 }
