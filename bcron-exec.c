@@ -99,6 +99,27 @@ static int pick_slot(void)
   return -1;
 }
 
+static void exec_cmd(int fdin, int fdout,
+		     const char** argv,
+		     const str* env,
+		     const struct passwd* pw)
+{
+  if (setgid(pw->pw_gid) == -1) die1sys(111, "Could not setgid");
+  if (setuid(pw->pw_uid) == -1) die1sys(111, "Could not setuid");
+  if (chdir(pw->pw_dir) == -1) die1sys(111, "Could not change directory");
+  if (env)
+    if ((environ = envstr_make_array(env)) == 0)
+      die_oom(111);
+  dup2(fdin, 0);
+  close(fdin);
+  dup2(fdout, 1);
+  dup2(fdout, 2);
+  close(fdout);
+  execv(argv[0], (char**)argv);
+  die3sys(111, "Could not execute '", argv[0], "'");
+  exit(111);
+}
+
 static int forkexec_slot(int slot, int fdin, int fdout,
 			 const char** argv,
 			 const str* env)
@@ -110,20 +131,7 @@ static int forkexec_slot(int slot, int fdin, int fdout,
     failsys(slots[slot].id.s, "ZFork failed");
     return 0;
   case 0:
-    if (setgid(pw->pw_gid) == -1) die1sys(111, "Could not setgid");
-    if (setuid(pw->pw_uid) == -1) die1sys(111, "Could not setuid");
-    if (chdir(pw->pw_dir) == -1) die1sys(111, "Could not change directory");
-    if (env)
-      if ((environ = envstr_make_array(env)) == 0)
-	die_oom(111);
-    dup2(fdin, 0);
-    close(fdin);
-    dup2(fdout, 1);
-    dup2(fdout, 2);
-    close(fdout);
-    execv(argv[0], (char**)argv);
-    die3sys(111, "Could not execute '", argv[0], "'");
-    exit(111);
+    exec_cmd(fdin, fdout, argv, env, pw);
   }
   slots[slot].pid = pid;
   return 1;
