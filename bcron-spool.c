@@ -37,6 +37,23 @@ static void respond(const char* msg)
   }
 }
 
+static void respond_okstr(const str* s)
+{
+  obuf_putu(&outbuf, s->len + 1);
+  obuf_putc(&outbuf, ':');
+  obuf_putc(&outbuf, 'K');
+  obuf_putstr(&outbuf, s);
+  obuf_putc(&outbuf, ',');
+  obuf_flush(&outbuf);
+  exit(0);
+}
+
+static void make_filename(const char* name)
+{
+  if (!str_copy2s(&filename, CRONTAB_DIR "/", name))
+    respond("ZCould not produce filename");
+}
+
 static int fixup(int fd)
 {
   int pid;
@@ -94,14 +111,7 @@ static void cmd_list(void)
     else
       respond("ZCould not read crontab");
   }
-  /* Put the netstring manually to avoid having to rewrite the data */
-  obuf_putu(&outbuf, data.len + 1);
-  obuf_putc(&outbuf, ':');
-  obuf_putc(&outbuf, 'K');
-  obuf_putstr(&outbuf, &data);
-  obuf_putc(&outbuf, ',');
-  obuf_flush(&outbuf);
-  exit(0);
+  respond_okstr(&data);
 }
 
 static void cmd_remove(void)
@@ -110,6 +120,28 @@ static void cmd_remove(void)
     respond("ZCould not remove crontab");
   trigger_pull(TRIGGER);
   respond("KCrontab removed");
+}
+
+static void cmd_listsys(void)
+{
+  DIR* dir;
+  direntry* entry;
+  str data = {0,0,0};
+  if ((dir = opendir(CRONTAB_DIR)) == 0)
+    respond("ZCould not open crontabs directory");
+  while ((entry = readdir(dir)) != 0) {
+    if (entry->d_name[0] != ':')
+      continue;
+    make_filename(entry->d_name);
+    if (!str_cat3s(&data, "==> ", entry->d_name, " <==\n"))
+      respond("ZOut of memory");
+    if (ibuf_openreadclose(filename.s, &data) == -1)
+      respond("ZCould not read crontab");
+    if (!str_catc(&data, '\n'))
+      respond("ZOut of memory");
+  }
+  closedir(dir);
+  respond_okstr(&data);
 }
 
 static void logcmd(char cmd)
@@ -157,6 +189,11 @@ int main(int argc, char* argv[])
   case 'S': cmd_store(&packet); break;
   case 'L': cmd_list(); break;
   case 'R': cmd_remove(); break;
+  case 'Y':
+    if (euid != 0 && euid != getuid())
+      respond("DOnly root or cron can list system crontabs");
+    cmd_listsys();
+    break;
   }
   respond("DInvalid command code");
   return 0;

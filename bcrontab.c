@@ -17,6 +17,7 @@ static const char* user = 0;
 static int cmd_list = 0;
 static int cmd_remove = 0;
 static int cmd_edit = 0;
+static int cmd_listsys = 0;
 
 const char program[] = "bcrontab";
 const int msg_show_pid = 0;
@@ -44,6 +45,8 @@ cli_option cli_options[] = {
     "List user's current crontab", 0 },
   { 'r', "remove", CLI_FLAG, 1, &cmd_remove,
     "Remove user's current crontab", 0 },
+  { 'y', "system", CLI_FLAG, 1, &cmd_listsys,
+    "List all system crontabs", 0 },
   { 'e', "edit", CLI_FLAG, 1, &cmd_edit,
     "Edit user's current crontab", 0 },
   /* Extended options */
@@ -190,6 +193,12 @@ static int do_edit(void)
   return 0;
 }
 
+static int do_listsys(void)
+{
+  docmd('Y', 0, 0);
+  return write(1, packet.s + 1, packet.len - 1) != (long)(packet.len - 1);
+}
+
 int cli_main(int argc, char* argv[])
 {
   if (user == 0
@@ -197,7 +206,7 @@ int cli_main(int argc, char* argv[])
       && (user = getenv("USER")) == 0)
     die1(111, "Could not determine user name");
 
-  switch (cmd_list + cmd_remove + cmd_edit) {
+  switch (cmd_list + cmd_remove + cmd_edit + cmd_listsys) {
   case 0:
     if (argc != 1)
       usage(111, "Too few command-line arguments");
@@ -207,7 +216,7 @@ int cli_main(int argc, char* argv[])
       usage(111, "Too many command-line arguments");
     break;
   default:
-    usage(111, "You must specify only one of -l, -r, or -e");
+    usage(111, "You must specify only one of -l, -r, -e, or -y");
   }
 
   if (cmd_list)
@@ -216,6 +225,8 @@ int cli_main(int argc, char* argv[])
     return do_remove();
   else if (cmd_edit)
     return do_edit();
+  else if (cmd_listsys)
+    return do_listsys();
   else /* cmd_replace */
     return do_replace(argv[0]);
 }

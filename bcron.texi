@@ -448,6 +448,9 @@ crontab file.
 List the current crontab file.  No content string.
 @item R
 Remove any previously submitted crontab file.  No content string.
+@item Y
+List all system crontabs.  No content string.  This command is only
+available to users @samp{root} and @samp{cron}.
 @end table
 
 Server response codes are:
