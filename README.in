@@ -4,7 +4,12 @@ Bruce Guenter <bruceg@em.ca>
 Version @VERSION@
 @TODAY@
 
-This is bcron, a new cron system.
+This is bcron, a new cron system designed with secure operations in
+mind.  To do this, the system is divided into several seperate programs,
+each responsible for a seperate task, with strictly controlled
+communications between them.  The user interface is a drop-in
+replacement for similar systems (such as vixie-cron), but the internals
+differ greatly.
 
 A mailing list has been set up to discuss this and other packages.
 To subscribe, send an email to:
@@ -17,7 +22,8 @@ Development versions of @PACKAGE@ are available via Subversion at:
 
 Requirements:
 
--
+- Needs ucspi-unix (or ucspi-local) to be able to accept user-submitted
+  crontabs.
 
 Installation:
 
@@ -25,24 +31,45 @@ Installation:
   http://untroubled.org/bglibs/ is compiled and installed.
 - Build the sources by running "make"
 - Run the "instshow" command to see what will be installed (optional).
-- After the package has been compiled, run the following commands as root:
-	./installer
-	./instcheck
-  These commands will produce no output if there are no errors.
+- After the package has been compiled, run the following command as root:
+	make install
+  This command will produce no output if there are no errors.
 
 Configuration:
 
--
+- Create a system user and group "cron".  This user will own all the
+  crontab files.
+
+- Create the spool directory as follows:
+  mkdir -p /var/spool/cron/crontabs /var/spool/cron/tmp
+  mkfifo /var/spool/cron/trigger
+  chown cron:cron /var/spool/cron /var/spool/cron/*
+  chmod go-rwx /var/spool/cron /var/spool/cron/*
+
+- Create the configuration directory /etc/bcron as follows:
+  mkdir -p /etc/bcron
+  You can put any common configuration settings into this directory,
+  like alternate spool directories in BCRON_SPOOL.
 
 Operation:
 
--
+- The scheduler can be started with the following command:
+  envdir /etc/bcron bcron-start | multilog t /var/log/bcron &
 
-Security Notes:
+- To accept crontabs from users, run the spooler:
+  envdir /etc/bcron \
+  envuidgid cron \
+  unixserver -U /tmp/.bcron-spool \
+  bcron-spool >/dev/null 2>&1 &
 
--
+- To update system crontabs, run the updater:
+  envdir /etc/bcron \
+  bcron-update /etc/crontab /etc/cron.d >/dev/null 2>&1 &
 
-This package is Copyright(C) 2004 Bruce Guenter or FutureQuest, Inc.,
+- Sample run scripts are provided for operating the above commands under
+  svscan and supervise.
+
+This package is Copyright(C) 2005 Bruce Guenter or FutureQuest, Inc.,
 and may be copied according to the GNU GENERAL PUBLIC LICENSE (GPL)
 Version 2 or a later version.  A copy of this license is included with
 this package.  This package comes with no warranty of any kind.

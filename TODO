@@ -6,8 +6,6 @@
 
 -Send email if cron job parsing fails.
  -Allow for some special address for system crontabs.
--Fix README
--Fix description in spec
 
 crontab.c:crontab_load:
 -merge jobs together, not just drop them
