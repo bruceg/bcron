@@ -43,8 +43,10 @@ Configuration:
 - Create the spool directory as follows:
   mkdir -p /var/spool/cron/crontabs /var/spool/cron/tmp
   mkfifo /var/spool/cron/trigger
-  chown cron:cron /var/spool/cron /var/spool/cron/*
-  chmod go-rwx /var/spool/cron /var/spool/cron/*
+  for i in crontabs tmp trigger; do
+    chown cron:cron /var/spool/cron/$i
+    chmod go-rwx /var/spool/cron/$i
+  done
 
 - Create the configuration directory /etc/bcron as follows:
   mkdir -p /etc/bcron
