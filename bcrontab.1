@@ -54,11 +54,12 @@ is not set and this is, it is used as the editor to invoke to edit a
 crontab.  If neither are set,
 .I /bin/vi
 is used.
-.TP BCRON_SOCKET
+.TP
+.B BCRON_SOCKET
 The path to the named socket used to communicate with
 .BR bcron-spool .
 Defaults to
-.IR /etc/.bcron-spool .
+.IR /tmp/.bcron-spool .
 .TP
 .B LOGNAME
 .TP
