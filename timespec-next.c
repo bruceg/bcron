@@ -139,10 +139,6 @@ static time_t advance_minute(time_t t, struct tm* tm, int daily)
   return t;
 }
 
-/* daylight is set when tzset(3) is called, and is true if DST applies
-   during some part of the year. */
-extern int daylight;
-
 /** Calculate the next time this job should get run.
 
 The algorithm used here is very simple: start at the last time the job
