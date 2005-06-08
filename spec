@@ -8,7 +8,7 @@ Source: http://untroubled.org/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
 URL: http://untroubled.org/@PACKAGE@/
 Packager: Bruce Guenter <bruceg@em.ca>
-BuildRequires: bglibs >= 1.019
+BuildRequires: bglibs >= 1.021
 Requires: ucspi-unix
 Requires: supervise-scripts >= 3.5
 Conflicts: vixie-cron
@@ -22,19 +22,15 @@ Bruce's Cron System
 %setup
 echo gcc "%{optflags}" >conf-cc
 echo gcc -s >conf-ld
+echo %{_bindir} >conf-bin
 
 %build
-make programs
+make
 
 %install
 rm -fr %{buildroot}
-rm -f conf_bin.c insthier.o installer instcheck
-echo %{buildroot}%{_bindir} >conf-bin
-make installer instcheck
-
 mkdir -p %{buildroot}%{_bindir}
-./installer
-./instcheck
+make install_prefix=%{buildroot} install
 
 mkdir -p %{buildroot}%{_mandir}/man{1,8}
 cp bcron-{exec,sched,spool,start,update}.8 %{buildroot}%{_mandir}/man8
