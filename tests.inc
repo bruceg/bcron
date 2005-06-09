@@ -1,13 +1,14 @@
 export USER=`whoami`
-export BCRON_HOME=$tmp/spool
+export BCRON_SPOOL=$tmp/spool
+export BCRON_SPOOL=$tmp/spool
 export BCRON_USER=$USER
 export BCRONTAB_SOCKET=$tmp/socket
-export CRONTABS=$BCRON_HOME/crontabs
+export CRONTABS=$BCRON_SPOOL/crontabs
 
-mkdir $BCRON_HOME
+mkdir $BCRON_SPOOL
 mkdir $CRONTABS
-mkdir $BCRON_HOME/tmp
-mkfifo $BCRON_HOME/trigger
+mkdir $BCRON_SPOOL/tmp
+mkfifo $BCRON_SPOOL/trigger
 
 netstring() {
   perl -e '
