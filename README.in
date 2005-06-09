@@ -60,7 +60,7 @@ Operation:
 - To accept crontabs from users, run the spooler:
   envdir /etc/bcron \
   envuidgid cron \
-  unixserver -U /tmp/.bcron-spool \
+  unixserver -U /var/run/bcron-spool \
   bcron-spool >/dev/null 2>&1 &
 
 - To update system crontabs, run the updater:

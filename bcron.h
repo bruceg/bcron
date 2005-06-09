@@ -8,7 +8,7 @@
 
 #define BCRON_SPOOL "/var/spool/cron"
 #define CRONTAB_DIR "crontabs"
-#define SOCKET_PATH "/tmp/.bcron-spool"
+#define SOCKET_PATH "/var/run/bcron-spool"
 #define BCRON_USER "cron"
 #define TRIGGER "trigger"
 

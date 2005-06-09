@@ -577,7 +577,7 @@ unlimited.
 
 @item BCRON_SOCKET
 The full path to the UNIX-domain socket used to submit crontabs.
-Defaults to @file{/tmp/.bcron-spool}.
+Defaults to @file{/var/run/bcron-spool}.
 
 @end table
 

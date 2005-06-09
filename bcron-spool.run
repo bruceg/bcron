@@ -5,6 +5,6 @@ envdir /etc/bcron \
 envuidgid cron \
 sh -c '
 exec \
-unixserver -U ${BCRON_SOCKET:-/tmp/.bcron-spool} \
+unixserver -U ${BCRON_SOCKET:-/var/run/bcron-spool} \
 bcron-spool
 '
