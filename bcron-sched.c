@@ -102,7 +102,8 @@ static void handle_stdin(void)
 int main(void)
 {
   msg_debug_init();
-  chdir_bcron();
+  if (chdir_bcron() != 0)
+    die1sys(111, "Could not change directory");
   nonblock_on(0);
   timespec_next_init();
   trigger_set(ios, TRIGGER);
