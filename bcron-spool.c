@@ -51,6 +51,8 @@ static void respond_okstr(const str* s)
 
 static void make_filename(const char* name)
 {
+  if (strchr(name, '/') != 0)
+    respond("DUsername contains an illegal character");
   if (!str_copy2s(&filename, CRONTAB_DIR "/", name))
     respond("ZCould not produce filename");
 }
