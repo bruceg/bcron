@@ -111,7 +111,7 @@ static void exec_cmd(int fdin, int fdout,
   dup2(fdout, 1);
   dup2(fdout, 2);
   close(fdout);
-  if (0 && initgroups(pw->pw_name, pw->pw_gid) != 0)
+  if (initgroups(pw->pw_name, pw->pw_gid) != 0)
     die1sys(111, "Could not initgroups");
   if (setgid(pw->pw_gid) != 0)
     die1sys(111, "Could not setgid");
