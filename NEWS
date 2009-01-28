@@ -3,6 +3,8 @@ Changes in version 0.10
 
 - Fixed a debug note that forced supplementary groups off in bcron-exec.
 
+- Fixed a bug in bcron-exec that would cause lost log messages.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

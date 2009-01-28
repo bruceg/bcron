@@ -107,9 +107,9 @@ static void exec_cmd(int fdin, int fdout,
 		     const struct passwd* pw)
 {
   dup2(fdin, 0);
-  close(fdin);
   dup2(fdout, 1);
   dup2(fdout, 2);
+  close(fdin);
   close(fdout);
   if (initgroups(pw->pw_name, pw->pw_gid) != 0)
     die1sys(111, "Could not initgroups");
@@ -274,7 +274,8 @@ static void end_slot(int slot, int status)
     /* To simplify the procedure, close the temporary file early.
      * The email sender still has it open, and will effect the final
      * deletion of the file when it completes. */
-    close(slots[slot].tmpfd);
+    if (slots[slot].tmpfd != devnull)
+      close(slots[slot].tmpfd);
     slots[slot].tmpfd = -1;
   }
 }
