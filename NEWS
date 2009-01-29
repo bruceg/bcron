@@ -5,6 +5,10 @@ Changes in version 0.10
 
 - Fixed a bug in bcron-exec that would cause lost log messages.
 
+- Fixed handling of failure to change directory at startup.
+
+- Blocked access to files outside of the spool in bcron-spool.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
