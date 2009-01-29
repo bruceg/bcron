@@ -2,7 +2,7 @@ Name: @PACKAGE@
 Summary: Bruce's Cron System
 Version: @VERSION@
 Release: 1
-Copyright: GPL
+License: GPL
 Group: Utilities/System
 Source: http://untroubled.org/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
