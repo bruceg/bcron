@@ -24,15 +24,13 @@ Requirements:
 
 - Needs ucspi-unix (or ucspi-local) to be able to accept user-submitted
   crontabs.
-- bglibs version 1.021 or later from http://untroubled.org/bglibs/
+- bglibs version 1.100 or later from http://untroubled.org/bglibs/
 
 Installation:
 
-- Build the sources by running "make"
-- Run the "instshow" command to see what will be installed (optional).
-- After the package has been compiled, run the following command as root:
-	make install
-  This command will produce no output if there are no errors.
+- Edit the configuration in the conf-* files as necessary.
+- Build the sources by running "make".
+- Install the package by running "make install" as root.
 
 Configuration:
 

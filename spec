@@ -8,7 +8,7 @@ Source: http://untroubled.org/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
 URL: http://untroubled.org/@PACKAGE@/
 Packager: Bruce Guenter <bruceg@em.ca>
-BuildRequires: bglibs >= 1.021
+BuildRequires: bglibs >= 1.100
 Requires: ucspi-unix
 Requires: supervise-scripts >= 3.5
 Conflicts: vixie-cron
@@ -23,13 +23,13 @@ Bruce's Cron System
 echo gcc "%{optflags}" >conf-cc
 echo gcc -s >conf-ld
 echo %{_bindir} >conf-bin
+echo %{_mandir} >conf-man
 
 %build
 make
 
 %install
 rm -fr %{buildroot}
-mkdir -p %{buildroot}%{_bindir}
 make install_prefix=%{buildroot} install
 
 mkdir -p %{buildroot}%{_mandir}/man{1,8}

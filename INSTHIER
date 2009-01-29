@@ -1,0 +1,17 @@
+>bin
+c:::755::bcron-exec
+c:::755::bcron-sched
+c:::755::bcron-spool
+c:::755::bcron-start
+c:::755::bcron-update
+c:::755::bcrontab
+s:::::crontab:bcrontab
+
+>man
+c:::644:man1:crontab.1
+c:::644:man5:crontab.5
+c:::644:man8:bcron-exec.8
+c:::644:man8:bcron-sched.8
+c:::644:man8:bcron-spool.8
+c:::644:man8:bcron-start.8
+c:::644:man8:bcron-update.8
