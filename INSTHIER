@@ -8,8 +8,12 @@ c:::755::bcrontab
 s:::::crontab:bcrontab
 
 >man
-c:::644:man1:crontab.1
+d:::755::man1
+c:::644:man1:bcrontab.1
+s::::man1:crontab.1:bcrontab.1
+d:::755::man5
 c:::644:man5:crontab.5
+d:::755::man8
 c:::644:man8:bcron-exec.8
 c:::644:man8:bcron-sched.8
 c:::644:man8:bcron-spool.8
