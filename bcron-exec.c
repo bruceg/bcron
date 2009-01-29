@@ -74,6 +74,7 @@ static void report(const char* id, const char* msg)
 
 static void report_slot(int slot, const char* msg)
 {
+  debugf(DEBUG_EXEC, "{slot }d{ report: }s", slot, msg + 1);
   report(slots[slot].id.s, msg);
 }
 
@@ -89,6 +90,7 @@ static void failsys(const char* id, const char* msg)
 
 static void failsys_slot(int slot, const char* msg)
 {
+  debugf(DEBUG_EXEC, "{slot }d{ failsys: }s", slot, msg + 1);
   failsys(slots[slot].id.s, msg);
 }
 
@@ -189,7 +191,7 @@ static void start_slot(int slot,
   const char* mailto;
   const struct passwd* pw = &slots[slot].pw;
   const char* shell;
-  
+
   msg5("(", pw->pw_name, ") CMD (", command, ")");
 
   env.len = 0;
@@ -235,6 +237,7 @@ static void start_slot(int slot,
   shell_argv[shell_argc+1] = "-c";
   shell_argv[shell_argc+2] = command;
 
+  debugf(DEBUG_EXEC, "{slot }d{ starting: }s", slot, command);
   if (!forkexec_slot(slot, devnull, fd, shell_argv, &env)) {
     if (fd != devnull)
       close(fd);
@@ -259,10 +262,12 @@ static void end_slot(int slot, int status)
   else {
     /* No header, no possible way to send email. */
     if (slots[slot].headerlen == 0)
-      report_slot(slot, "KJob complete");
+      report_slot(slot, "KJob complete, no MAILTO");
     else {
       /* If the job crashed, make sure it is noted. */
       if (WIFSIGNALED(status)) {
+	debugf(DEBUG_EXEC, "{slot }d{ Job was killed by signal #}d",
+	       slot, WTERMSIG(status));
 	wrap_str(str_copys(&tmp, "\n\nJob was killed by signal #"));
 	wrap_str(str_cati(&tmp, WTERMSIG(status)));
 	wrap_str(str_catc(&tmp, '\n'));
@@ -274,12 +279,13 @@ static void end_slot(int slot, int status)
 	if (lseek(slots[slot].tmpfd, SEEK_SET, 0) != 0)
 	  failsys_slot(slot, "ZCould not lseek");
 	else {
+	  debugf(DEBUG_EXEC, "{slot }d{ Job complete, sending mail}", slot);
 	  forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
 	  slots[slot].sending_email = 1;
 	}
       }
       else
-	report_slot(slot, "KJob complete");
+	report_slot(slot, "KJob complete, no mail sent");
     }
     /* To simplify the procedure, close the temporary file early.
      * The email sender still has it open, and will effect the final
@@ -356,6 +362,8 @@ int main(int argc, char* argv[])
   iopoll_fd fds[2];
   int selfpipe;
   int i;
+
+  msg_debug_init();
 
   if ((shell_argv = malloc((argc + 3) * sizeof *argv)) == 0)
     die_oom(111);

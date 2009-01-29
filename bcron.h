@@ -16,6 +16,7 @@
 #define DEBUG_SCHED 2
 #define DEBUG_JOBS 4
 #define DEBUG_CONN 8
+#define DEBUG_EXEC 0x10
 
 #define IGNORE_EXEC 1
 
