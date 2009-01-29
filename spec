@@ -32,10 +32,6 @@ make
 rm -fr %{buildroot}
 make install_prefix=%{buildroot} install
 
-mkdir -p %{buildroot}%{_mandir}/man{1,8}
-cp bcron-{exec,sched,spool,start,update}.8 %{buildroot}%{_mandir}/man8
-cp bcrontab.1 %{buildroot}%{_mandir}/man1
-
 mkdir -p %{buildroot}/var/service/bcron-{sched/log,spool,update}
 install -m 755 bcron-sched.run %{buildroot}/var/service/bcron-sched/run
 install -m 755 bcron-sched-log.run %{buildroot}/var/service/bcron-sched/log/run
