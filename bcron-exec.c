@@ -72,6 +72,11 @@ static void report(const char* id, const char* msg)
     exit(111);
 }
 
+static void report_slot(int slot, const char* msg)
+{
+  report(slots[slot].id.s, msg);
+}
+
 static void failsys(const char* id, const char* msg)
 {
   wrap_str(str_copyb(&tmp, id, strlen(id) + 1));
@@ -80,6 +85,11 @@ static void failsys(const char* id, const char* msg)
   wrap_str(str_cats(&tmp, strerror(errno)));
   if (!sendpacket(1, &tmp))
     exit(111);
+}
+
+static void failsys_slot(int slot, const char* msg)
+{
+  failsys(slots[slot].id.s, msg);
 }
 
 static void init_slots(void)
@@ -135,7 +145,7 @@ static int forkexec_slot(int slot, int fdin, int fdout,
   const struct passwd* pw = &slots[slot].pw;
   switch (pid = fork()) {
   case -1:
-    failsys(slots[slot].id.s, "ZFork failed");
+    failsys_slot(slot, "ZFork failed");
     return 0;
   case 0:
     exec_cmd(fdin, fdout, argv, env, pw);
@@ -201,7 +211,7 @@ static void start_slot(int slot,
   }
   else {
     if ((fd = path_mktemp(tmpprefix, &tmp)) == -1) {
-      failsys(slots[slot].id.s, "ZCould not create temporary file");
+      failsys_slot(slot, "ZCould not create temporary file");
       return;
     }
     unlink(tmp.s);
@@ -216,7 +226,7 @@ static void start_slot(int slot,
     if (write(fd, tmp.s, tmp.len) != (long)tmp.len) {
       close(fd);
       fd = -1;
-      report(slots[slot].id.s, "ZCould not write message header");
+      report_slot(slot, "ZCould not write message header");
       return;
     }
   }
@@ -242,14 +252,14 @@ static void end_slot(int slot, int status)
   if (slots[slot].sending_email) {
     slots[slot].sending_email = 0;
     if (status)
-      report(slots[slot].id.s, "ZJob complete, sending email failed");
+      report_slot(slot, "ZJob complete, sending email failed");
     else
-      report(slots[slot].id.s, "KJob complete, email sent");
+      report_slot(slot, "KJob complete, email sent");
   }
   else {
     /* No header, no possible way to send email. */
     if (slots[slot].headerlen == 0)
-      report(slots[slot].id.s, "KJob complete");
+      report_slot(slot, "KJob complete");
     else {
       /* If the job crashed, make sure it is noted. */
       if (WIFSIGNALED(status)) {
@@ -259,17 +269,17 @@ static void end_slot(int slot, int status)
 	write(slots[slot].tmpfd, tmp.s, tmp.len);
       }
       if (fstat(slots[slot].tmpfd, &st) == -1)
-	failsys(slots[slot].id.s, "ZCould not fstat");
+	failsys_slot(slot, "ZCould not fstat");
       else if (st.st_size > slots[slot].headerlen) {
 	if (lseek(slots[slot].tmpfd, SEEK_SET, 0) != 0)
-	  failsys(slots[slot].id.s, "ZCould not lseek");
+	  failsys_slot(slot, "ZCould not lseek");
 	else {
 	  forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
 	  slots[slot].sending_email = 1;
 	}
       }
       else
-	report(slots[slot].id.s, "KJob complete");
+	report_slot(slot, "KJob complete");
     }
     /* To simplify the procedure, close the temporary file early.
      * The email sender still has it open, and will effect the final
