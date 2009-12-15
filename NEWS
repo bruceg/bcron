@@ -11,6 +11,9 @@ Changes in version 0.10
 
 - Added debug messages to bcron-exec.
 
+- Fixed a bug in bcron-spool that caused listing missing crontabs to
+  silently succeed.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

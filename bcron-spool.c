@@ -109,7 +109,7 @@ static void cmd_store(str* data)
 static void cmd_list(void)
 {
   str data = {0,0,0};
-  if (ibuf_openreadclose(filename.s, &data) == -1) {
+  if (ibuf_openreadclose(filename.s, &data) == 0) {
     if (errno == ENOENT)
       respond("DCrontab does not exist");
     else
