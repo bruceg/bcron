@@ -15,7 +15,6 @@
 #include <str/str.h>
 #include <unix/nonblock.h>
 #include <unix/selfpipe.h>
-#include <unix/sig.h>
 
 #include "bcron.h"
 
