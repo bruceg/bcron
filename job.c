@@ -45,14 +45,12 @@ void job_exec(struct job* job)
 {
   static str packet;
   static unsigned long id = 1;
-  debug2(DEBUG_JOBS, "Running: ", job->command);
+  const char *runas = job->runas != 0 ? job->runas : "";
+  debugf(DEBUG_JOBS, "{Running: (}s{) }s", runas, job->command);
   packet.len = 0;
   str_catu(&packet, id++);
   str_catc(&packet, 0);
-  if (job->runas != 0)
-    str_catb(&packet, job->runas, strlen(job->runas) + 1);
-  else
-    str_catc(&packet, 0);
+  str_catb(&packet, runas, strlen(runas) + 1);
   str_catb(&packet, job->command, strlen(job->command) + 1);
   str_cat(&packet, &job->environ);
   if (sendpacket(1, &packet) == -1)
