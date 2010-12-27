@@ -74,8 +74,10 @@ static void run_jobs(void)
   struct ghashiter i;
 
   gettimeofday(&reftime, 0);
-  if (reftime.tv_sec < nexttime)
+  if (reftime.tv_sec < nexttime) {
+    debug1(DEBUG_SCHED, "Not enough time has elapsed, sleeping again");
     return;
+  }
 
   debug2(DEBUG_SCHED, "Running jobs at: ", fmttime(reftime.tv_sec));
   ghashiter_loop(&i, &crontabs) {
