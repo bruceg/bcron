@@ -137,3 +137,10 @@ void crontab_free(struct crontab* c)
   job_free(c->jobs);
   free(c);
 }
+
+void crontab_dump(struct crontab* c)
+{
+  struct job* job;
+  for (job = c->jobs; job != 0; job = job->next)
+    job_dump(job);
+}

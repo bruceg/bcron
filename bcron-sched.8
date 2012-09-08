@@ -15,6 +15,14 @@ should normally be run by
 .B bcron-start
 in conjunction with
 .BR bcron-exec .
+.SH SIGNALS
+.TP 5
+.B SIGUSR1
+On receipt of the
+.B SIGUSR1
+signal,
+.B bcron-sched
+will dump a set of log messages describing all the jobs it is scheduling.
 .SH ENVIRONMENT
 .TP 5
 .B BCRON_SPOOL

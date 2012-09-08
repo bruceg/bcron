@@ -21,6 +21,7 @@ bcron-exec:
 bcron-start:
 
 bcron-sched:
+-Allow forced recalculation of all times (SIGHUP?)
 -If time has jumped backwards or forwards by too large an interval (1
 hour?), recalculate all times.
 -Fix spurious double-reloading of cronjobs updated by bcron-update.

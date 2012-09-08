@@ -1,6 +1,7 @@
 #include <sysdeps.h>
 #include <systime.h>
 #include <errno.h>
+#include <signal.h>
 #include <unistd.h>
 
 #include <iobuf/iobuf.h>
@@ -10,6 +11,7 @@
 #include <str/iter.h>
 #include <str/str.h>
 #include <unix/nonblock.h>
+#include <unix/sig.h>
 #include <unix/trigger.h>
 
 #include "bcron.h"
@@ -101,6 +103,12 @@ static void handle_stdin(void)
 }
 #endif
 
+static void catch_usr1(int sig)
+{
+  crontabs_dump();
+  (void)sig;
+}
+
 int main(void)
 {
   msg_debug_init();
@@ -109,6 +117,7 @@ int main(void)
   nonblock_on(0);
   timespec_next_init();
   trigger_set(ios, TRIGGER);
+  sig_catch(SIGUSR1, catch_usr1);
 
 #ifndef IGNORE_EXEC
   ios[2].fd = 0;

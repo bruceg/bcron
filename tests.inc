@@ -1,6 +1,5 @@
 export USER=`whoami`
 export BCRON_SPOOL=$tmp/spool
-export BCRON_SPOOL=$tmp/spool
 export BCRON_USER=$USER
 export BCRONTAB_SOCKET=$tmp/socket
 export CRONTABS=$BCRON_SPOOL/crontabs
@@ -35,4 +34,18 @@ spoolcmd() {
 
 sched() {
   MSG_DEBUG=0 $src/test-sched "$@" 2>&1
+}
+
+startsched() {
+    sched_pid=$( $src/bcron-sched >$tmp/sched-log 2>&1 & echo $! )
+    sleep 1
+}
+
+stopsched() {
+    sleep 1
+    kill $sched_pid
+
+    sed -e '
+        s/next:....-..-.. ..:..:.. [^ ]*/next:####-##-## ##:##:## #TZ/;
+    ' <$tmp/sched-log
 }

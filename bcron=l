@@ -3,6 +3,7 @@ connection.o
 crontab.o
 crontabs.o
 job.o
+job_dump.o
 ministat.o
 sendpacket.o
 tempfile.o

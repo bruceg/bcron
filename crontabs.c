@@ -77,3 +77,12 @@ void crontabs_load(void)
       reload(entry);
   }
 }
+
+void crontabs_dump(void)
+{
+  struct ghashiter i;
+  ghashiter_loop(&i, &crontabs) {
+    msgf("{Crontab \"}s{\":}", ((struct crontabs_entry*)i.entry)->key);
+    crontab_dump(&((struct crontabs_entry*)i.entry)->data);
+  }
+}

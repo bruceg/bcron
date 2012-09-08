@@ -104,6 +104,7 @@ struct job* job_new(const struct job_timespec* times,
 		    const str* environ);
 void job_free(struct job* job);
 void job_exec(struct job* job);
+void job_dump(struct job* job);
 
 /*****************************************************************************/
 struct crontab
@@ -115,10 +116,12 @@ struct crontab
 int crontab_parse(struct crontab* c, str* data, const char* runas);
 int crontab_import(struct crontab* c, const char* path, const char* runas);
 void crontab_free(struct crontab* c);
+void crontab_dump(struct crontab* c);
 
 /*****************************************************************************/
 extern struct ghash crontabs;
 GHASH_DECL(crontabs,const char*,struct crontab);
 void crontabs_load(void);
+void crontabs_dump(void);
 
 #endif
