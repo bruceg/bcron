@@ -25,6 +25,7 @@ conf-bin
 conf-cc
 conf-ld
 conf-man
+conf_sendmail.c
 load
 makelib
 shiftime.so

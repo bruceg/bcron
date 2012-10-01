@@ -17,6 +17,7 @@
 #include <unix/selfpipe.h>
 
 #include "bcron.h"
+#include "conf_sendmail.c"
 
 const char program[] = "bcron-exec";
 const int msg_show_pid = 0;
@@ -38,10 +39,6 @@ struct slot
 };
 static struct slot slots[SLOT_MAX];
 static int slots_used = 0;
-
-static const char* sendmail[7] = {
-  "/usr/sbin/sendmail", "-FCronDaemon", "-i", "-odi", "-oem", "-t", 0
-};
 
 /*
   Input: ID NUL username NUL command NUL environment NUL NUL

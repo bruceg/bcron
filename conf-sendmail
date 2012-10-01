@@ -1,0 +1,3 @@
+/usr/sbin/sendmail -FCronDaemon -i -odi -oem -t
+
+This is the command that will be used, by default, to send messages.

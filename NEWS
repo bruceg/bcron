@@ -16,6 +16,8 @@ Changes in version 0.10
 
 - Added support for dumping the current job schedule in bcron-sched.
 
+- Added configuration file for hard-coded sendmail command line.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

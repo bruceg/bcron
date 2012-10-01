@@ -1,0 +1,2 @@
+: conf-sendmail
+python -c 'import shlex; line=shlex.split(open("conf-sendmail").readline().strip()); print "const char* sendmail[] = { "+",".join(["\"%%s\""%%a for a in line])+",NULL };"' >conf_sendmail.c
