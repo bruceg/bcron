@@ -243,6 +243,17 @@ static void start_slot(int slot,
   slots[slot].tmpfd = fd;
 }
 
+static void send_email(int slot)
+{
+  if (lseek(slots[slot].tmpfd, SEEK_SET, 0) != 0)
+    failsys_slot(slot, "ZCould not lseek");
+  else {
+    debugf(DEBUG_EXEC, "{slot }d{ Job complete, sending mail}", slot);
+    forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
+    slots[slot].sending_email = 1;
+  }
+}
+
 static void end_slot(int slot, int status)
 {
   struct stat st;
@@ -271,15 +282,8 @@ static void end_slot(int slot, int status)
       }
       if (fstat(slots[slot].tmpfd, &st) == -1)
 	failsys_slot(slot, "ZCould not fstat");
-      else if (st.st_size > slots[slot].headerlen) {
-	if (lseek(slots[slot].tmpfd, SEEK_SET, 0) != 0)
-	  failsys_slot(slot, "ZCould not lseek");
-	else {
-	  debugf(DEBUG_EXEC, "{slot }d{ Job complete, sending mail}", slot);
-	  forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
-	  slots[slot].sending_email = 1;
-	}
-      }
+      else if (st.st_size > slots[slot].headerlen)
+	send_email(slot);
       else
 	report_slot(slot, "KJob complete, no mail sent");
     }
