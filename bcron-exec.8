@@ -19,6 +19,11 @@ should normally be run by
 .B bcron-start
 in conjunction with
 .BR bcron-sched .
+.SH ENVIRONMENT
+.TP 5
+.B TESTMODE
+If set, skip doing setuid, dump email to stdout instead of invoking
+sendmail.
 .SH SEE ALSO
 bcron-sched(8), bcron-start(8)
 .SH AUTHOR

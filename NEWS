@@ -18,6 +18,8 @@ Changes in version 0.10
 
 - Added configuration file for hard-coded sendmail command line.
 
+- Added a self-test mode for bcron-exec.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -26,6 +26,7 @@ extern char** environ;
 
 static const char** shell_argv;
 static int shell_argc;
+static int testmode = 0;
 
 #define SLOT_MAX 512
 struct slot 
@@ -119,12 +120,14 @@ static void exec_cmd(int fdin, int fdout,
   dup2(fdout, 2);
   close(fdin);
   close(fdout);
-  if (initgroups(pw->pw_name, pw->pw_gid) != 0)
-    die1sys(111, "Could not initgroups");
-  if (setgid(pw->pw_gid) != 0)
-    die1sys(111, "Could not setgid");
-  if (setuid(pw->pw_uid) != 0)
-    die1sys(111, "Could not setuid");
+  if (!testmode) {
+    if (initgroups(pw->pw_name, pw->pw_gid) != 0)
+      die1sys(111, "Could not initgroups");
+    if (setgid(pw->pw_gid) != 0)
+      die1sys(111, "Could not setgid");
+    if (setuid(pw->pw_uid) != 0)
+      die1sys(111, "Could not setuid");
+  }
   if (chdir(pw->pw_dir) != 0)
     die1sys(111, "Could not change directory");
   if (env)
@@ -248,9 +251,19 @@ static void send_email(int slot)
   if (lseek(slots[slot].tmpfd, SEEK_SET, 0) != 0)
     failsys_slot(slot, "ZCould not lseek");
   else {
-    debugf(DEBUG_EXEC, "{slot }d{ Job complete, sending mail}", slot);
-    forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
-    slots[slot].sending_email = 1;
+    if (testmode) {
+      char buf[4096];
+      int rd;
+      while ((rd = read(slots[slot].tmpfd, buf, sizeof buf)) > 0) {
+	write(2, buf, rd);
+      }
+      report_slot(slot, "KJob complete");
+    }
+    else {
+      debugf(DEBUG_EXEC, "{slot }d{ Job complete, sending mail}", slot);
+      forkexec_slot(slot, slots[slot].tmpfd, devnull, sendmail, 0);
+      slots[slot].sending_email = 1;
+    }
   }
 }
 
@@ -364,6 +377,7 @@ int main(int argc, char* argv[])
   int i;
 
   msg_debug_init();
+  testmode = getenv("TESTMODE") != 0;
 
   if ((shell_argv = malloc((argc + 3) * sizeof *argv)) == 0)
     die_oom(111);
