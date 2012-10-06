@@ -13,6 +13,7 @@
 #include <path/path.h>
 #include <str/env.h>
 #include <str/str.h>
+#include <unix/cloexec.h>
 #include <unix/nonblock.h>
 #include <unix/selfpipe.h>
 
@@ -115,6 +116,7 @@ static void exec_cmd(int fdin, int fdout,
 		     const str* env,
 		     const struct passwd* pw)
 {
+  selfpipe_close();
   dup2(fdin, 0);
   dup2(fdout, 1);
   dup2(fdout, 2);
@@ -216,6 +218,7 @@ static void start_slot(int slot,
       return;
     }
     unlink(tmp.s);
+    cloexec_on(fd);
     gethostname(hostname, sizeof hostname);
     wrap_str(str_copyns(&tmp, 6, "To: <", mailto, ">\n",
 			"From: Cron Daemon <root@", hostname, ">\n"));

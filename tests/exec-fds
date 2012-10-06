@@ -1,0 +1,22 @@
+doexec \
+	'sleep 1; echo all done' \
+	'echo here >&4; echo here >&5; echo here >&6; echo here >&7; echo here >&8'
+<result>
+15:2^@KJob complete,15:1^@KJob complete,
+bcron-exec: (USER) CMD (sleep 1; echo all done)
+bcron-exec: (USER) CMD (echo here >&4; echo here >&5; echo here >&6; echo here >&7; echo here >&8)
+bcron-exec: Waiting for remaining slots to complete
+To: <USER>
+From: Cron Daemon <root@HOST>
+Subject: Cron <USER@HOST> echo here >&4; echo here >&5; echo here >&6; echo here >&7; echo here >&8
+
+/bin/sh: 1: 4: Bad file descriptor
+/bin/sh: 1: 5: Bad file descriptor
+/bin/sh: 1: 6: Bad file descriptor
+/bin/sh: 1: 7: Bad file descriptor
+/bin/sh: 1: 8: Bad file descriptor
+To: <USER>
+From: Cron Daemon <root@HOST>
+Subject: Cron <USER@HOST> sleep 1; echo all done
+
+all done

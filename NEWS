@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.10
 
+- Fixed bug in bcron-exec that allowed cron jobs to access the temporary
+  output file from all other jobs that are still running.
+
 - Fixed a debug note that forced supplementary groups off in bcron-exec.
 
 - Fixed a bug in bcron-exec that would cause lost log messages.
