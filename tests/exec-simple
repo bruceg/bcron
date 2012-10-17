@@ -1,0 +1,10 @@
+doexec 'echo yes'
+<result>
+15:1^@KJob complete,
+bcron-exec: (USER) CMD (echo yes)
+bcron-exec: Waiting for remaining slots to complete
+To: <USER>
+From: Cron Daemon <root@HOST>
+Subject: Cron <USER@HOST> echo yes
+
+yes
