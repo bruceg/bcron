@@ -1,5 +1,3 @@
--FIXME: Disallow setting $LOGNAME and $USER in crontabs.
-
 -Put info file into appropriate place in spec.
 
 -Add support for binary (pre-parsed) crontabs.
