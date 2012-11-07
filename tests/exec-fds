@@ -1,20 +1,34 @@
+echo 'exec 2>/dev/null' >$tmp/echo-all.sh
+fd=4
+while [ $fd -lt 10 ]
+do
+  echo "echo here >&$fd || echo safe fd $fd" >>$tmp/echo-all.sh
+  fd=$(( $fd + 1 ))
+done
+echo 'echo first done' >>$tmp/echo-all.sh
+
 doexec \
 	'sleep 1; echo all done' \
-	'echo here >&4; echo here >&5; echo here >&6; echo here >&7; echo here >&8'
+	"sh $tmp/echo-all.sh"
+
+rm -f $tmp/echo-all.sh
+
 <result>
 15:2^@KJob complete,15:1^@KJob complete,
 bcron-exec: (USER) CMD (sleep 1; echo all done)
-bcron-exec: (USER) CMD (echo here >&4; echo here >&5; echo here >&6; echo here >&7; echo here >&8)
+bcron-exec: (USER) CMD (sh $tmp/echo-all.sh)
 bcron-exec: Waiting for remaining slots to complete
 To: <USER>
 From: Cron Daemon <root@HOST>
-Subject: Cron <USER@HOST> echo here >&4; echo here >&5; echo here >&6; echo here >&7; echo here >&8
+Subject: Cron <USER@HOST> sh $tmp/echo-all.sh
 
-/bin/sh: 1: 4: Bad file descriptor
-/bin/sh: 1: 5: Bad file descriptor
-/bin/sh: 1: 6: Bad file descriptor
-/bin/sh: 1: 7: Bad file descriptor
-/bin/sh: 1: 8: Bad file descriptor
+safe fd 4
+safe fd 5
+safe fd 6
+safe fd 7
+safe fd 8
+safe fd 9
+first done
 To: <USER>
 From: Cron Daemon <root@HOST>
 Subject: Cron <USER@HOST> sleep 1; echo all done

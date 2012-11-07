@@ -1,5 +1,6 @@
 export USER=`whoami`
 export HOST=`hostname -f`
+export SHOST=`hostname -s`
 export BCRON_SPOOL=$tmp/spool
 export BCRON_USER=$USER
 export BCRONTAB_SOCKET=$tmp/socket
@@ -58,6 +59,7 @@ catsub() {
         s/<$USER>/<USER>/g
         s/<$USER@/<USER@/g
 	s/@$HOST>/@HOST>/g
+	s/@$SHOST>/@HOST>/g
     "
 }
 
