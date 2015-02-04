@@ -1,7 +1,7 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <unistd.h>
 
-#include <path/path.h>
+#include <bglibs/path.h>
 
 #include "bcron.h"
 

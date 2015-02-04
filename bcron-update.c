@@ -1,4 +1,4 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -7,13 +7,13 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <adt/ghash.h>
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <path/path.h>
-#include <str/iter.h>
-#include <str/str.h>
-#include <unix/trigger.h>
+#include <bglibs/ghash.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/path.h>
+#include <bglibs/striter.h>
+#include <bglibs/str.h>
+#include <bglibs/trigger.h>
 
 #include "bcron.h"
 

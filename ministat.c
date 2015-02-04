@@ -1,11 +1,11 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/stat.h>
 
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <str/str.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/str.h>
 
 #include "bcron.h"
 

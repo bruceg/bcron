@@ -1,4 +1,4 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 
 #include <ctype.h>
 #include <string.h>

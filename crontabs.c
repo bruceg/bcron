@@ -1,9 +1,9 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <string.h>
 
-#include <adt/ghash.h>
-#include <msg/msg.h>
-#include <msg/wrap.h>
+#include <bglibs/ghash.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
 
 #include "bcron.h"
 

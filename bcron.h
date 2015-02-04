@@ -1,10 +1,10 @@
 #ifndef BCRON__H__
 #define BCRON__H__
 
-#include <sysdeps.h>
-#include <systime.h>
-#include <adt/ghash.h>
-#include <str/str.h>
+#include <bglibs/sysdeps.h>
+#include <bglibs/systime.h>
+#include <bglibs/ghash.h>
+#include <bglibs/str.h>
 
 #define BCRON_SPOOL "/var/spool/cron"
 #define CRONTAB_DIR "crontabs"

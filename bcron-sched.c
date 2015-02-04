@@ -1,18 +1,18 @@
-#include <sysdeps.h>
-#include <systime.h>
+#include <bglibs/sysdeps.h>
+#include <bglibs/systime.h>
 #include <errno.h>
 #include <signal.h>
 #include <unistd.h>
 
-#include <iobuf/iobuf.h>
-#include <misc/misc.h>
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <str/iter.h>
-#include <str/str.h>
-#include <unix/nonblock.h>
-#include <unix/sig.h>
-#include <unix/trigger.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/misc.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/striter.h>
+#include <bglibs/str.h>
+#include <bglibs/unix.h>
+#include <bglibs/sig.h>
+#include <bglibs/trigger.h>
 
 #include "bcron.h"
 

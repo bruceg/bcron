@@ -1,12 +1,12 @@
-#include <sysdeps.h>
-#include <systime.h>
+#include <bglibs/sysdeps.h>
+#include <bglibs/systime.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <cli/cli.h>
-#include <iobuf/iobuf.h>
-#include <misc/misc.h>
-#include <msg/msg.h>
+#include <bglibs/cli.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/misc.h>
+#include <bglibs/msg.h>
 
 #include "bcron.h"
 

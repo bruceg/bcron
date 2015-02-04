@@ -1,13 +1,13 @@
-#include <sysdeps.h>
-#include <systime.h>
+#include <bglibs/sysdeps.h>
+#include <bglibs/systime.h>
 #include <ctype.h>
 #include <string.h>
 
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <str/env.h>
-#include <str/iter.h>
-#include <str/str.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/envstr.h>
+#include <bglibs/striter.h>
+#include <bglibs/str.h>
 
 #include "bcron.h"
 

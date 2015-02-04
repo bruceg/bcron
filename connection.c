@@ -1,10 +1,10 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
-#include <str/str.h>
-#include <unix/nonblock.h>
+#include <bglibs/str.h>
+#include <bglibs/unix.h>
 #include "bcron.h"
 
 void connection_init(struct connection* c, int fd, void* data)

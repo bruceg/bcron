@@ -1,15 +1,15 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <cli/cli.h>
-#include <iobuf/iobuf.h>
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <net/socket.h>
-#include <path/path.h>
-#include <str/str.h>
+#include <bglibs/cli.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/socket.h>
+#include <bglibs/path.h>
+#include <bglibs/str.h>
 
 #include "bcron.h"
 

@@ -1,4 +1,4 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <errno.h>
 #include <grp.h>
 #include <pwd.h>
@@ -7,15 +7,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <iobuf/iobuf.h>
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <path/path.h>
-#include <str/env.h>
-#include <str/str.h>
-#include <unix/cloexec.h>
-#include <unix/nonblock.h>
-#include <unix/selfpipe.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/path.h>
+#include <bglibs/envstr.h>
+#include <bglibs/str.h>
+#include <bglibs/unix.h>
+#include <bglibs/selfpipe.h>
 
 #include "bcron.h"
 #include "conf_sendmail.c"

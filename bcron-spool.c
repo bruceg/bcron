@@ -1,4 +1,4 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <errno.h>
 #include <pwd.h>
 #include <stdio.h>
@@ -7,12 +7,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <iobuf/iobuf.h>
-#include <misc/ucspi.h>
-#include <msg/msg.h>
-#include <path/path.h>
-#include <str/str.h>
-#include <unix/trigger.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/ucspi.h>
+#include <bglibs/msg.h>
+#include <bglibs/path.h>
+#include <bglibs/str.h>
+#include <bglibs/trigger.h>
 
 #include "bcron.h"
 
