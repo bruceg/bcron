@@ -1,6 +1,7 @@
 export USER=`whoami`
 export HOST=`hostname -f`
 export SHOST=`hostname -s`
+export BCRON_SOCKET=$tmp/spool-sock
 export BCRON_SPOOL=$tmp/spool
 export BCRON_USER=$USER
 export BCRONTAB_SOCKET=$tmp/socket
@@ -50,6 +51,16 @@ stopsched() {
     sed -e '
         s/next:....-..-.. ..:..:.. [^ ]*/next:####-##-## ##:##:## #TZ/;
     ' <$tmp/sched-log
+}
+
+startspool() {
+    spool_pid=$( unixserver $BCRON_SOCKET $src/bcron-spool > $tmp/spool-log 2>&1 & echo $! )
+    sleep 1
+}
+
+stopspool() {
+    kill $spool_pid
+    cat $tmp/spool-log | sed -e 's/\[[0-9]*\]:/[#]:/'
 }
 
 catsub() {

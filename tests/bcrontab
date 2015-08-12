@@ -1,0 +1,28 @@
+startspool
+
+bcrontab -l
+echo $?
+
+echo 'Test crontab' >$CRONTABS/$USER
+bcrontab -l
+echo $?
+rm -f $CRONTABS/$USER
+
+bcrontab -l -u nobody
+echo $?
+
+echo
+stopspool
+
+<result>
+bcrontab: Fatal: Crontab does not exist
+111
+Test crontab
+0
+bcrontab: Fatal: Username does not match invoking UID
+111
+
+bcron-spool[#]: L bruce
+bcron-spool[#]: Fatal: bruce: Crontab does not exist
+bcron-spool[#]: L bruce
+bcron-spool[#]: Fatal: nobody: Username does not match invoking UID
