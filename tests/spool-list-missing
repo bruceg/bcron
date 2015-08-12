@@ -1,4 +1,4 @@
 rm -f $CRONTABS/$USER
-echo -n "L$USER" | spoolcmd
+printf "L$USER" | spoolcmd
 <result>
 23:DCrontab does not exist,

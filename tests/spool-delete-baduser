@@ -1,5 +1,5 @@
 touch $CRONTABS/root
-echo -n "Rroot" | spoolcmd
+printf "Rroot" | spoolcmd
 test -e $CRONTABS/root && echo File still exists.
 <result>
 37:DUsername does not match invoking UID,

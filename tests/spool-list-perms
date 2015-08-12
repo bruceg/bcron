@@ -1,6 +1,6 @@
 touch $CRONTABS/$USER
 chmod 000 $CRONTABS/$USER
-echo -n "L$USER" | spoolcmd
+printf "L$USER" | spoolcmd
 rm -f $CRONTABS/$USER
 <result>
 23:ZCould not read crontab,

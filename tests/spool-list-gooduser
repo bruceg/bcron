@@ -1,5 +1,5 @@
 echo crontab > $CRONTABS/$USER
-echo -n "L$USER" | spoolcmd
+printf "L$USER" | spoolcmd
 rm -f $CRONTABS/$USER
 <result>
 9:Kcrontab

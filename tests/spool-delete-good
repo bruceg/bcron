@@ -1,5 +1,5 @@
 touch $CRONTABS/$USER
-echo -n "R$USER" | spoolcmd
+printf "R$USER" | spoolcmd
 test -e $CRONTABS/$USER && echo File still exists.
 <result>
 16:KCrontab removed,
