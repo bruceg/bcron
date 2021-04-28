@@ -1,5 +1,7 @@
 *.a
 *.o
+*.tmp
+*~
 *.[158].html
 ANNOUNCEMENT
 AUTOFILES
@@ -31,3 +33,10 @@ makelib
 shiftime.so
 /tests.sh
 /test-sched
+/debian/.debhelper/
+/debian/*.substvars
+/debian/bcron-run/
+/debian/bcron/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/tmp/
